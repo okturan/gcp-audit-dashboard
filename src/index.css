@@ -1,0 +1,351 @@
+/* GCP Dashboard styles — class names are app-scoped (no CSS modules).
+   Prefix with 'gcp-' if integrating with external component libraries. */
+
+:root {
+  --bg-primary: #0d1117;
+  --bg-secondary: #161b22;
+  --border: #30363d;
+  --text-primary: #e6edf3;
+  --text-muted: #8b949e;
+  --accent-blue: #58a6ff;
+  --accent-gold: #f0883e;
+  --accent-green: #3fb950;
+  --accent-red: #f85149;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", monospace;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#root {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* React Flow dark overrides */
+.react-flow__background { background: #0d1117 !important; }
+.react-flow__minimap {
+  background: #161b22 !important;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+}
+.react-flow__controls {
+  background: #161b22 !important;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  box-shadow: none !important;
+}
+.react-flow__controls-button {
+  background: #161b22 !important;
+  color: #e6edf3 !important;
+  border-bottom: 1px solid #30363d !important;
+  fill: #8b949e !important;
+}
+.react-flow__controls-button:hover { background: #21262d !important; }
+.react-flow__edge.selected .react-flow__edge-path { stroke: #58a6ff !important; }
+.react-flow__handle { width: 8px !important; height: 8px !important; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0d1117; }
+::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #484f58; }
+
+/* Toast animation */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Shimmer for loading states */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ── Interactive element styles ────────────────────────────────────────────── */
+
+/* Focus-visible outlines on all focusable elements */
+:focus-visible {
+  outline: 2px solid #58a6ff;
+  outline-offset: 1px;
+}
+
+/* Buttons — explicit focus-visible for keyboard navigation */
+button:focus-visible {
+  outline: 2px solid #58a6ff;
+  outline-offset: 1px;
+}
+
+/* Remove default outline for non-keyboard users */
+:focus:not(:focus-visible) { outline: none; }
+
+/* ── Buttons ──────────────────────────────────────────────────────────────── */
+
+.btn-primary:hover:not(:disabled) {
+  filter: brightness(1.15);
+  box-shadow: 0 2px 8px rgba(31,111,235,0.3);
+}
+.btn-primary:active:not(:disabled) { filter: brightness(0.95); }
+
+.btn-secondary:hover:not(:disabled) {
+  background: #3a414a !important;
+}
+.btn-secondary:active:not(:disabled) { background: #282e35 !important; }
+
+.btn-purple:hover:not(:disabled) {
+  filter: brightness(1.15);
+  box-shadow: 0 2px 8px rgba(110,64,201,0.3);
+}
+.btn-purple:active:not(:disabled) { filter: brightness(0.95); }
+
+.btn-ghost:hover { background: #21262d !important; }
+.btn-ghost:active { background: #282e35 !important; }
+
+/* ── List rows ────────────────────────────────────────────────────────────── */
+
+.list-row {
+  transition: background 0.1s, border-color 0.1s;
+}
+.list-row:hover {
+  background: #1c2128 !important;
+}
+.list-row.selected {
+  background: #1c2d3d !important;
+  border-left-color: #58a6ff !important;
+}
+.list-row.selected:hover {
+  background: #213550 !important;
+}
+.list-row:focus-visible,
+.finding-row:focus-visible {
+  outline: 2px solid #58a6ff;
+  outline-offset: -2px;
+}
+
+/* ── Finding rows ─────────────────────────────────────────────────────────── */
+
+.finding-row {
+  transition: background 0.1s;
+}
+.finding-row:hover {
+  background: #161b22 !important;
+}
+.finding-row.selected {
+  background: #1c2d3d !important;
+}
+.finding-row.selected:hover {
+  background: #213550 !important;
+}
+
+/* ── Table rows ───────────────────────────────────────────────────────────── */
+
+.table-row {
+  transition: background 0.1s;
+}
+.table-row:hover {
+  background: #1c2128 !important;
+}
+.table-row.selected {
+  background: #1c2d3d !important;
+}
+
+/* ── Tab buttons ──────────────────────────────────────────────────────────── */
+
+.tab-btn {
+  transition: color 0.15s, background 0.15s;
+}
+.tab-btn:hover:not(.tab-btn-active) {
+  color: #c9d1d9 !important;
+  background: #21262d !important;
+}
+
+/* ── Context menu items ───────────────────────────────────────────────────── */
+
+.ctx-menu-item {
+  transition: background 0.1s;
+}
+.ctx-menu-item:hover {
+  background: #1c2d3d !important;
+}
+
+/* ── Drag handles ─────────────────────────────────────────────────────────── */
+
+.drag-handle {
+  transition: background 0.15s;
+}
+.drag-handle:hover {
+  background: #58a6ff !important;
+}
+
+/* ── Legend filter buttons ─────────────────────────────────────────────────── */
+
+.legend-btn {
+  transition: opacity 0.15s, background 0.15s;
+}
+.legend-btn:hover {
+  background: rgba(255,255,255,0.06) !important;
+}
+
+/* ── Console links ────────────────────────────────────────────────────────── */
+
+.console-link {
+  transition: color 0.15s, background 0.15s;
+}
+.console-link:hover {
+  background: #161b22 !important;
+  color: #79c0ff !important;
+}
+
+/* ── Input fields ─────────────────────────────────────────────────────────── */
+
+.input-field {
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.input-field:focus-visible {
+  border-color: #58a6ff;
+  box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.3);
+  outline: none;
+}
+
+/* ── Breadcrumb links ─────────────────────────────────────────────────────── */
+
+.breadcrumb-link {
+  transition: color 0.1s;
+}
+.breadcrumb-link:hover {
+  color: #79c0ff !important;
+  text-decoration: underline;
+}
+
+/* ── Node console link arrow ──────────────────────────────────────────────── */
+
+.node-console-link {
+  transition: color 0.15s;
+}
+.node-console-link:hover {
+  color: #58a6ff !important;
+}
+
+/* ── Collapsible section headers ──────────────────────────────────────────── */
+
+.collapsible-header {
+  transition: color 0.1s;
+}
+.collapsible-header:hover {
+  color: #c9d1d9 !important;
+}
+
+/* ── Service pill tags ────────────────────────────────────────────────────── */
+
+.service-pill {
+  transition: border-color 0.15s, color 0.15s;
+}
+.service-pill:hover {
+  border-color: #484f58 !important;
+  color: #c9d1d9 !important;
+}
+
+/* ── Detail row values (click to copy) ────────────────────────────────────── */
+
+.detail-value {
+  transition: color 0.15s, background 0.15s;
+  border-radius: 3px;
+  padding: 0 2px;
+  margin: 0 -2px;
+}
+.detail-value:hover {
+  background: rgba(88,166,255,0.08);
+  color: #e6edf3 !important;
+}
+
+/* ── Shimmer loading bar ──────────────────────────────────────────────────── */
+
+.shimmer-bar {
+  background: linear-gradient(90deg, #21262d 0%, #30363d 50%, #21262d 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+/* ── Slide-in animation (detail drawer) ──────────────────────────────────── */
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+/* ── View switcher tabs ──────────────────────────────────────────────────── */
+
+.view-tab {
+  background: none;
+  border: none;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #8b949e;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.view-tab:hover {
+  color: #c9d1d9;
+}
+.view-tab.active {
+  color: #e6edf3;
+  border-bottom-color: #58a6ff;
+}
+.view-tab:focus-visible {
+  outline: 2px solid #58a6ff;
+  outline-offset: -2px;
+}
+
+/* ── Stat cards grid (Overview) ──────────────────────────────────────────── */
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+/* ── Stat cards hover (Overview) ──────────────────────────────────────────── */
+
+.stat-card:hover {
+  border-color: #484f58;
+}
+
+/* ── Quick links hover (Overview) ────────────────────────────────────────── */
+
+.quick-link:hover {
+  border-color: #58a6ff;
+}
+
+/* ── Charts grid (ChartsView full-width) ─────────────────────────────────── */
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+@media (max-width: 900px) {
+  .charts-grid { grid-template-columns: 1fr; }
+}
+
+.chart-card {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 16px;
+}
