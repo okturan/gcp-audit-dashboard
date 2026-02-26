@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <!-- Subtle shadow for depth -->
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- Dark background rounded square -->
+  <rect x="4" y="4" width="112" height="112" rx="24" ry="24" fill="#0d1117"/>
+
+  <!-- Cloud shape -->
+  <g filter="url(#shadow)">
+    <!-- Main cloud body built from overlapping circles and a rect -->
+    <path d="
+      M 34 72
+      C 26 72 20 66 20 58
+      C 20 50 26 44 34 44
+      C 34 36 40 28 50 28
+      C 58 28 64 32 67 38
+      C 69 36 72 35 76 35
+      C 84 35 90 41 90 49
+      C 96 50 100 55 100 62
+      C 100 69 95 74 88 75
+      L 34 75
+      Z
+    " fill="#161b22" stroke="#30363d" stroke-width="0.5"/>
+  </g>
+
+  <!-- Shield shape centered on the cloud -->
+  <g transform="translate(60, 54)">
+    <!-- Shield outline - four colored segments -->
+
+    <!-- Top-left: Blue -->
+    <path d="
+      M 0 -18
+      C -8 -18 -15 -14 -18 -8
+      L -18 2
+      C -18 2 -14 2 0 2
+      L 0 -18
+      Z
+    " fill="#4285F4" opacity="0.95"/>
+
+    <!-- Top-right: Red -->
+    <path d="
+      M 0 -18
+      C 8 -18 15 -14 18 -8
+      L 18 2
+      C 18 2 14 2 0 2
+      L 0 -18
+      Z
+    " fill="#EA4335" opacity="0.95"/>
+
+    <!-- Bottom-left: Green -->
+    <path d="
+      M -18 2
+      L 0 2
+      L 0 22
+      C -10 18 -16 10 -18 2
+      Z
+    " fill="#34A853" opacity="0.95"/>
+
+    <!-- Bottom-right: Yellow -->
+    <path d="
+      M 18 2
+      L 0 2
+      L 0 22
+      C 10 18 16 10 18 2
+      Z
+    " fill="#FBBC05" opacity="0.95"/>
+
+    <!-- Checkmark (audit/verified symbol) -->
+    <polyline
+      points="-6,2 -2,7 7,-5"
+      fill="none"
+      stroke="#e6edf3"
+      stroke-width="3"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </g>
+
+  <!-- Subtle highlight on cloud top -->
+  <path d="
+    M 50 30
+    C 56 30 62 33 65 38
+    C 67 37 70 36 74 36
+    C 80 36 85 39 88 43
+  " fill="none" stroke="#e6edf3" stroke-width="0.5" opacity="0.15"/>
+</svg>
