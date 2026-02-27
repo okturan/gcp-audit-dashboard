@@ -120,14 +120,14 @@ function OverviewDashboard() {
   // Mini charts: top requests & tokens
   const requestData = useMemo(
     () => rawProjects
-      .map((pd) => ({ name: shortName(pd), value: pd.usage?.requestCount ?? 0 }))
+      .map((pd) => ({ name: shortName(pd), nodeId: `project-${pd.project.projectId}`, value: pd.usage?.requestCount ?? 0 }))
       .sort((a, b) => b.value - a.value)
       .slice(0, 5),
     [rawProjects]
   );
   const tokenData = useMemo(
     () => rawProjects
-      .map((pd) => ({ name: shortName(pd), value: pd.usage?.tokenCount ?? 0 }))
+      .map((pd) => ({ name: shortName(pd), nodeId: `project-${pd.project.projectId}`, value: pd.usage?.tokenCount ?? 0 }))
       .sort((a, b) => b.value - a.value)
       .slice(0, 5),
     [rawProjects]
@@ -266,10 +266,10 @@ function OverviewDashboard() {
       {(requestData.some((d) => d.value > 0) || tokenData.some((d) => d.value > 0)) && (
         <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
           {requestData.some((d) => d.value > 0) && (
-            <MiniBarChart title="Top 5 — 30d Requests" data={requestData} color="#1f6feb" labelColor="#58a6ff" />
+            <MiniBarChart title="Top 5 — 30d Requests" data={requestData} color="#1f6feb" labelColor="#58a6ff" onBarClick={(nodeId) => openDetailDrawer(nodeId)} />
           )}
           {tokenData.some((d) => d.value > 0) && (
-            <MiniBarChart title="Top 5 — 30d Tokens" data={tokenData} color="#8957e5" labelColor="#a78bfa" />
+            <MiniBarChart title="Top 5 — 30d Tokens" data={tokenData} color="#8957e5" labelColor="#a78bfa" onBarClick={(nodeId) => openDetailDrawer(nodeId)} />
           )}
         </div>
       )}
@@ -327,11 +327,12 @@ function QuickLink({ label, onClick }: { label: string; onClick: () => void }) {
   );
 }
 
-function MiniBarChart({ title, data, color, labelColor }: {
+function MiniBarChart({ title, data, color, labelColor, onBarClick }: {
   title: string;
-  data: { name: string; value: number }[];
+  data: { name: string; nodeId: string; value: number }[];
   color: string;
   labelColor: string;
+  onBarClick?: (nodeId: string) => void;
 }) {
   const barHeight = 24;
   const chartHeight = data.length * barHeight + 24;
@@ -363,7 +364,16 @@ function MiniBarChart({ title, data, color, labelColor }: {
             formatter={(v: any) => [fmt(Number(v)), '']}
             labelStyle={{ color: '#c9d1d9' }}
           />
-          <Bar dataKey="value" radius={[0, 3, 3, 0]} background={{ fill: '#0d1117' }} minPointSize={2} fill={color}>
+          <Bar
+            dataKey="value"
+            radius={[0, 3, 3, 0]}
+            background={{ fill: '#0d1117' }}
+            minPointSize={2}
+            fill={color}
+            cursor={onBarClick ? 'pointer' : undefined}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onClick={onBarClick ? (_entry: any, index: number) => { onBarClick(data[index].nodeId); } : undefined}
+          >
             <LabelList
               dataKey="value"
               position="right"

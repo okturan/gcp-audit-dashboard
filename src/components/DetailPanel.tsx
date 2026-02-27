@@ -255,6 +255,7 @@ function NodeDetails({ node }: { node: AppNode }) {
           ? '🌐 Browser (HTTP referrers)'
           : '🖥 Server (IP addresses)';
 
+    // eslint-disable-next-line react-hooks/purity -- age-in-days is inherently time-dependent
     const ageMs = apiKey.createTime ? Date.now() - new Date(apiKey.createTime).getTime() : undefined;
     const ageDays = ageMs !== undefined ? Math.floor(ageMs / 86_400_000) : undefined;
 

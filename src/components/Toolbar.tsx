@@ -185,16 +185,17 @@ export function Toolbar() {
   const hasData = rawProjects.length > 0;
 
   // Relative timestamp label, refreshed every 30 s
-  const [timeLabel, setTimeLabel] = useState<string>(() => relativeTime(lastDiscoveredAt));
+  const [tick, setTick] = useState(0);
 
   useEffect(() => {
-    setTimeLabel(relativeTime(lastDiscoveredAt));
     if (!lastDiscoveredAt) return;
-    const id = setInterval(() => {
-      setTimeLabel(relativeTime(lastDiscoveredAt));
-    }, TIMESTAMP_REFRESH_MS);
+    const id = setInterval(() => setTick((t) => t + 1), TIMESTAMP_REFRESH_MS);
     return () => clearInterval(id);
   }, [lastDiscoveredAt]);
+
+  // Re-derive on every tick or when lastDiscoveredAt changes
+  const timeLabel = lastDiscoveredAt ? relativeTime(lastDiscoveredAt) : '';
+  void tick; // referenced to prevent unused-var lint
 
   const exportBtnStyle: React.CSSProperties = {
     background: '#30363d',

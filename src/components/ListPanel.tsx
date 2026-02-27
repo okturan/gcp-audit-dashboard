@@ -84,12 +84,15 @@ export function ListPanel() {
   const [activeTab, setActiveTab] = useState<ListTab>('projects');
 
   // Auto-select tab that matches a newly selected node
-  useEffect(() => {
-    if (!selectedNodeId) return;
-    if (selectedNodeId.startsWith('billing-')) setActiveTab('billing');
-    else if (selectedNodeId.startsWith('project-')) setActiveTab('projects');
-    else if (selectedNodeId.startsWith('apikey-')) setActiveTab('keys');
-  }, [selectedNodeId]);
+  const derivedTab: ListTab | null = selectedNodeId
+    ? selectedNodeId.startsWith('billing-') ? 'billing'
+      : selectedNodeId.startsWith('project-') ? 'projects'
+        : selectedNodeId.startsWith('apikey-') ? 'keys'
+          : null
+    : null;
+  if (derivedTab && derivedTab !== activeTab) {
+    setActiveTab(derivedTab);
+  }
 
   if (discoveryState !== 'success') {
     return (

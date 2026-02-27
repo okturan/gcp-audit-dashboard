@@ -42,6 +42,9 @@ export function TableView() {
     );
   }, [allApiKeys, q]);
 
+  // eslint-disable-next-line react-hooks/purity -- age-in-days is inherently time-dependent
+  const now = Date.now();
+
   const sortedProjects = useMemo(() => {
     const copy = [...filteredProjects];
     const dir = sortDir === 'asc' ? 1 : -1;
@@ -243,7 +246,7 @@ export function TableView() {
                 ?? r?.serverKeyRestrictions?.allowedIps?.join(', ')
                 ?? '—';
             const createdMs = key.createTime ? new Date(key.createTime).getTime() : undefined;
-            const ageDays = createdMs !== undefined ? Math.floor((Date.now() - createdMs) / 86_400_000) : undefined;
+            const ageDays = createdMs !== undefined ? Math.floor((now - createdMs) / 86_400_000) : undefined;
             return (
               <tr
                 key={nodeId}

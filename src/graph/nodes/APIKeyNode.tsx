@@ -24,6 +24,7 @@ export const APIKeyNode = memo(function APIKeyNode({ data, selected }: NodeProps
     : '—';
 
   const ageDays = apiKey.createTime
+    // eslint-disable-next-line react-hooks/purity -- age-in-days is inherently time-dependent
     ? Math.floor((Date.now() - new Date(apiKey.createTime).getTime()) / 86_400_000)
     : undefined;
   const ageWarning = ageDays !== undefined && ageDays > 180 ? 'red' : ageDays !== undefined && ageDays > 90 ? 'yellow' : null;

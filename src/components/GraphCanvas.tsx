@@ -198,7 +198,7 @@ function FlowInner({ onContextMenu }: { onContextMenu?: (ctx: { x: number; y: nu
   // Sorted node IDs for keyboard navigation (stored in ref to avoid re-subscribing the listener)
   const sortedNodeIds = useMemo(() => nodes.map((n) => n.id), [nodes]);
   const sortedNodeIdsRef = useRef(sortedNodeIds);
-  sortedNodeIdsRef.current = sortedNodeIds;
+  useEffect(() => { sortedNodeIdsRef.current = sortedNodeIds; }, [sortedNodeIds]);
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
