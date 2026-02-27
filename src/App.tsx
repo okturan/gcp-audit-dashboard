@@ -1,19 +1,41 @@
 import { useEffect, useState } from 'react';
 import { ReactFlowProvider } from '@xyflow/react';
 import { useGCPStore, subscribeToasts, type Toast } from './store/useGCPStore';
+import type { AuthState } from './store/useGCPStore';
 import { CredentialLoader } from './components/CredentialLoader';
 import { Toolbar, ViewSwitcher } from './components/Toolbar';
 import { DetailDrawer } from './components/DetailDrawer';
 import { OverviewView, GraphView, TableView, ChartsView, FindingsView } from './views';
 
 export default function App() {
-  const isSignedIn = useGCPStore((s) => s.isSignedIn);
+  const authState: AuthState = useGCPStore((s) => s.authState);
   const autoAuth = useGCPStore((s) => s.autoAuth);
   const activeView = useGCPStore((s) => s.activeView);
 
   useEffect(() => { autoAuth(); }, [autoAuth]);
 
-  if (!isSignedIn) {
+  if (authState === 'checking') {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100vh',
+          background: '#0d1117',
+          color: '#8b949e',
+          gap: 12,
+        }}
+      >
+        <div className="spinner" />
+        <span style={{ fontSize: 13 }}>Connecting...</span>
+        <Toaster />
+      </div>
+    );
+  }
+
+  if (authState === 'signed-out') {
     return <CredentialLoader />;
   }
 

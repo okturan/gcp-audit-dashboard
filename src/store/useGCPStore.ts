@@ -32,12 +32,19 @@ export function subscribeToasts(fn: (toasts: Toast[]) => void) {
 
 type DiscoveryState = 'idle' | 'loading' | 'success' | 'error';
 type InsightState = 'idle' | 'loading' | 'success' | 'error';
+export type AuthState = 'checking' | 'signed-out' | 'signed-in';
+export type AuthMethod = 'gcloud' | 'oauth' | null;
 export type ViewId = 'overview' | 'graph' | 'table' | 'charts' | 'findings';
+
+// Module-level flag — prevents autoAuth from re-firing after manual sign-out.
+// Cleared on page refresh (module re-initializes).
+let _manuallySignedOut = false;
 
 interface GCPStore {
   // Auth
   oauthClientId: string;
-  isSignedIn: boolean;
+  authState: AuthState;
+  authMethod: AuthMethod;
   gcloudEmail: string;
   signInError: string | null;
 
@@ -112,7 +119,8 @@ function scheduleTokenRefresh() {
 
 export const useGCPStore = create<GCPStore>((set, get) => ({
   oauthClientId: '',
-  isSignedIn: false,
+  authState: 'checking',
+  authMethod: null,
   gcloudEmail: '',
   signInError: null,
 
@@ -150,7 +158,11 @@ export const useGCPStore = create<GCPStore>((set, get) => ({
   // Try gcloud CLI auth first — works automatically when running via npm run dev.
   // Falls back to Google OAuth popup if gcloud isn't available.
   autoAuth: async () => {
-    set({ signInError: null });
+    if (_manuallySignedOut) {
+      set({ authState: 'signed-out' });
+      return;
+    }
+    set({ authState: 'checking', signInError: null });
     try {
       const resp = await fetch('/api/gcloud-token');
       if (resp.ok) {
@@ -158,7 +170,8 @@ export const useGCPStore = create<GCPStore>((set, get) => ({
         if (data.token) {
           setToken(data.token, 3600);
           scheduleTokenRefresh();
-          set({ isSignedIn: true, gcloudEmail: data.email ?? '' });
+          set({ authState: 'signed-in', authMethod: 'gcloud', gcloudEmail: data.email ?? '' });
+          addToast('Signed in via gcloud CLI');
           // Auto-discover after successful gcloud auth
           setTimeout(() => get().discover(), 100);
           return;
@@ -166,7 +179,7 @@ export const useGCPStore = create<GCPStore>((set, get) => ({
       }
     } catch { /* gcloud not available */ }
     // gcloud path failed — stay on sign-in screen for manual OAuth
-    set({ isSignedIn: false });
+    set({ authState: 'signed-out' });
   },
 
   signIn: () => {
@@ -178,16 +191,18 @@ export const useGCPStore = create<GCPStore>((set, get) => ({
     set({ signInError: null });
     requestToken(
       oauthClientId,
-      () => set({ isSignedIn: true, signInError: null, gcloudEmail: '' }),
-      (err) => set({ signInError: err, isSignedIn: false }),
+      () => set({ authState: 'signed-in', authMethod: 'oauth', signInError: null, gcloudEmail: '' }),
+      (err) => set({ signInError: err, authState: 'signed-out' }),
     );
   },
 
   signOut: () => {
+    _manuallySignedOut = true;
     clearToken();
     if (_refreshTimer) { clearTimeout(_refreshTimer); _refreshTimer = null; }
     set({
-      isSignedIn: false,
+      authState: 'signed-out',
+      authMethod: null,
       gcloudEmail: '',
       nodes: [],
       edges: [],
@@ -200,6 +215,7 @@ export const useGCPStore = create<GCPStore>((set, get) => ({
       detailDrawerNodeId: null,
       selectedNodeId: null,
     });
+    addToast('Signed out');
   },
 
   setClaudeApiKey: (key) => {

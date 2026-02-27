@@ -15,15 +15,14 @@
   <img alt="TypeScript 5.9" src="https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white&style=flat-square" />
   <img alt="React 19" src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white&style=flat-square" />
   <img alt="Vite 7" src="https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white&style=flat-square" />
-  <img alt="Build Passing" src="https://img.shields.io/badge/build-passing-brightgreen?style=flat-square" />
 </p>
 
 <p align="center">
-  <a href="#-quick-start">Quick Start</a> •
-  <a href="#-features">Features</a> •
-  <a href="#-how-it-works">How It Works</a> •
-  <a href="#-security-model">Security</a> •
-  <a href="#-export">Export</a>
+  <a href="#quick-start">Quick Start</a> •
+  <a href="#features">Features</a> •
+  <a href="#how-it-works">How It Works</a> •
+  <a href="#security-model">Security</a> •
+  <a href="#export">Export</a>
 </p>
 
 ---
@@ -33,7 +32,7 @@ GCP Audit Dashboard connects to your Google Cloud account using OAuth or the gcl
 ## Features
 
 - **Automatic Resource Discovery** - Scans billing accounts, projects, API keys, enabled services, IAM policies, service accounts, and usage metrics in parallel
-- **Interactive Graph Visualization** - Explore your GCP hierarchy as a force-directed node graph with color-coded resource types and automatic Dagre layout
+- **Interactive Graph Visualization** - Explore your GCP hierarchy as a node graph with color-coded resource types and automatic tree layout
 - **Built-in Security Findings** - Detects unrestricted API keys, stale keys (90d/180d), public IAM bindings, deleted principals, disabled service accounts with active roles, zombie projects, and overprivileged service accounts
 - **Security Health Score** - A 0-100 score calculated from critical findings and warnings, displayed as a donut chart on the overview dashboard
 - **AI-Powered Analysis (Optional)** - Send your discovered infrastructure to Claude for deeper security and cost insights with per-resource severity ratings and actionable suggestions
@@ -75,7 +74,7 @@ GCP Audit Dashboard connects to your Google Cloud account using OAuth or the gcl
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/gcp-audit-dashboard.git
+git clone https://github.com/okturan/gcp-audit-dashboard.git
 cd gcp-audit-dashboard
 
 # Install dependencies
@@ -89,14 +88,14 @@ gcloud auth application-default login
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173) in your browser. If gcloud CLI credentials are detected, authentication happens automatically and discovery begins right away.
+Open the URL printed by Vite (typically `http://localhost:5173`, but Vite will pick the next available port if 5173 is in use). If gcloud CLI credentials are detected, authentication happens automatically and discovery begins right away.
 
 ### Alternative: Google OAuth
 
 If you prefer OAuth instead of the gcloud CLI:
 
 1. Create an OAuth 2.0 Client ID in the [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
-2. Add `http://localhost:5173` as an authorized JavaScript origin
+2. Add the local dev URL (e.g. `http://localhost:5173`) as an authorized JavaScript origin
 3. Paste the Client ID into the sign-in screen and click **Sign In with Google**
 
 ### Production Build
@@ -143,7 +142,7 @@ Discovered resources are converted into typed React Flow nodes with a determinis
 | API Key | `apikey-{uid}` | Green |
 | Service | `service-{projectId}-{serviceName}` | Gray |
 
-Edges connect projects to their billing account, and API keys and services to their parent project. Layout is computed using the Dagre algorithm.
+Edges connect projects to their billing account, and API keys and services to their parent project. Layout is computed using a custom hierarchical tree algorithm.
 
 ### 4. AI Analysis (Optional)
 
@@ -154,10 +153,10 @@ If you provide a Claude API key, the dashboard sends a compact JSON summary of y
 This project was designed with security as a first-class concern:
 
 - **Fully Client-Side** - There is no backend server. All API calls go directly from the browser to Google Cloud APIs and (optionally) the Anthropic API.
-- **No Token Persistence** - OAuth access tokens are held in JavaScript module-scoped variables, never written to localStorage or cookies. They are lost on page close.
+- **No Token Persistence** - OAuth access tokens are held in JavaScript module-scoped variables, never written to localStorage or cookies. They are lost on page close. Only the OAuth Client ID (a public, non-secret value) and UI layout preferences are persisted to localStorage.
 - **No API Key Persistence** - The Claude API key is kept in component state only. It is never persisted to any storage.
 - **Read-Only Scopes** - The app only requests `read-only` and `readonly` OAuth scopes. It cannot modify your GCP resources.
-- **Content Security Policy** - The HTML includes a strict CSP header that restricts script sources to `self` and `accounts.google.com`, blocks iframes entirely, and limits network connections to `*.googleapis.com`.
+- **Content Security Policy** - The HTML includes a strict CSP header that restricts script sources to `self` and `accounts.google.com`, blocks iframes entirely, and limits network connections to `*.googleapis.com` and `api.anthropic.com`.
 - **Session Cache with Expiry** - Discovery results are cached in `sessionStorage` for page-refresh resilience but expire after 30 minutes and are validated before use.
 
 ## Tech Stack
@@ -168,7 +167,7 @@ This project was designed with security as a first-class concern:
 | Language | [TypeScript 5.9](https://www.typescriptlang.org) |
 | Build Tool | [Vite 7](https://vite.dev) |
 | Graph Rendering | [@xyflow/react 12](https://reactflow.dev) (React Flow) |
-| Graph Layout | [Dagre](https://github.com/dagrejs/dagre) (directed acyclic graph layout) |
+| Graph Layout | Custom hierarchical tree layout |
 | Charts | [Recharts 3](https://recharts.org) |
 | State | [Zustand 5](https://zustand.docs.pmnd.rs) |
 | AI Analysis | [Anthropic SDK](https://docs.anthropic.com) (Claude Sonnet) |
@@ -202,7 +201,7 @@ src/
 │   └── constants.ts             # API base URLs
 ├── graph/
 │   ├── builder.ts               # Transforms GCP data into React Flow nodes/edges
-│   ├── layout.ts                # Dagre layout computation
+│   ├── layout.ts                # Hierarchical tree layout algorithm
 │   └── nodes/                   # Custom node components (Billing, Project, Key, Service)
 ├── store/
 │   └── useGCPStore.ts           # Zustand store (auth, discovery, insights, UI state)
@@ -210,12 +209,14 @@ src/
 │   ├── findings.ts              # Rule-based security finding computation
 │   └── format.ts                # Number formatting helpers
 ├── views/
+│   ├── index.ts                 # Barrel export
 │   ├── OverviewView.tsx         # Dashboard with health score, stats, charts
 │   ├── GraphView.tsx            # Interactive node graph
 │   ├── TableView.tsx            # Sortable resource table
 │   ├── ChartsView.tsx           # Usage bar charts (requests, tokens)
 │   └── FindingsView.tsx         # Security findings with severity filter
 ├── types.ts                     # All shared TypeScript interfaces
+├── index.css                    # Global styles and dark theme
 ├── App.tsx                      # Root layout and view router
 └── main.tsx                     # Entry point
 ```
