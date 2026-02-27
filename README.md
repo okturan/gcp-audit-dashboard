@@ -15,6 +15,9 @@
   <img alt="TypeScript 5.9" src="https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white&style=flat-square" />
   <img alt="React 19" src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white&style=flat-square" />
   <img alt="Vite 7" src="https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white&style=flat-square" />
+  <a href="https://github.com/okturan/gcp-audit-dashboard/actions/workflows/ci.yml">
+    <img alt="CI" src="https://github.com/okturan/gcp-audit-dashboard/actions/workflows/ci.yml/badge.svg" />
+  </a>
 </p>
 
 <p align="center">
