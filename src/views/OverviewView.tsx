@@ -8,23 +8,55 @@ import type { ViewId } from '../store/useGCPStore';
 export function OverviewView() {
   const {
     discoveryState,
+    discoveryError,
     discoveryProgress,
     discoveryTotal,
     discoveryDone,
     discover,
+    gcloudEmail,
+    authMethod,
+    signOut,
   } = useGCPStore();
 
   // Pre-discovery: welcome + CTA
   if (discoveryState === 'idle') {
+    const isServiceAccount = gcloudEmail?.includes('iam.gserviceaccount.com');
     return (
       <div style={centeredStyle}>
         <div style={{ fontSize: 56, marginBottom: 20, opacity: 0.8 }}>☁️</div>
         <h2 style={{ color: '#e6edf3', fontSize: 20, fontWeight: 700, marginBottom: 8 }}>
           Welcome to GCP Dashboard
         </h2>
-        <p style={{ color: '#8b949e', fontSize: 14, marginBottom: 24, maxWidth: 400, textAlign: 'center' }}>
+        <p style={{ color: '#8b949e', fontSize: 14, marginBottom: 16, maxWidth: 400, textAlign: 'center' }}>
           Discover and audit your Google Cloud Platform projects, API keys, services, and IAM policies.
         </p>
+
+        {/* Show current account identity */}
+        {gcloudEmail && (
+          <div style={{
+            background: isServiceAccount ? '#1c1a0e' : '#0c1929',
+            border: `1px solid ${isServiceAccount ? '#d9770633' : '#1d4778'}`,
+            borderRadius: 8,
+            padding: '10px 16px',
+            marginBottom: 16,
+            maxWidth: 480,
+            width: '100%',
+            textAlign: 'center',
+          }}>
+            <div style={{ fontSize: 10, fontWeight: 600, color: '#8b949e', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
+              Signed in as{authMethod === 'gcloud' ? ' (via gcloud CLI)' : ''}
+            </div>
+            <div style={{ fontSize: 13, color: isServiceAccount ? '#d97706' : '#58a6ff', fontFamily: 'monospace', wordBreak: 'break-all' }}>
+              {gcloudEmail}
+            </div>
+            {isServiceAccount && (
+              <div style={{ fontSize: 11, color: '#f0883e', marginTop: 6 }}>
+                This is a service account. You may want to switch to your personal account.
+              </div>
+            )}
+          </div>
+        )}
+
         <button
           onClick={discover}
           className="btn-primary"
@@ -41,6 +73,29 @@ export function OverviewView() {
         >
           Discover GCP Resources
         </button>
+
+        {/* Switch account hint */}
+        {authMethod === 'gcloud' && (
+          <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+            <button
+              onClick={signOut}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#8b949e',
+                fontSize: 12,
+                cursor: 'pointer',
+                textDecoration: 'underline',
+                textUnderlineOffset: 3,
+              }}
+            >
+              Sign out and use a different account
+            </button>
+            <span style={{ fontSize: 11, color: '#7d8590', maxWidth: 400, textAlign: 'center' }}>
+              To switch gcloud accounts: <code style={{ color: '#8b949e' }}>gcloud config set account YOUR_EMAIL</code>
+            </span>
+          </div>
+        )}
       </div>
     );
   }
@@ -77,7 +132,27 @@ export function OverviewView() {
     return (
       <div style={centeredStyle}>
         <div style={{ fontSize: 36, marginBottom: 16 }}>❌</div>
-        <p style={{ color: '#f85149', fontSize: 14 }}>Discovery failed. Check browser console.</p>
+        <p style={{ color: '#f85149', fontSize: 15, fontWeight: 600, marginBottom: 8 }}>Discovery failed</p>
+        {discoveryError && (
+          <p style={{ color: '#8b949e', fontSize: 12, maxWidth: 560, textAlign: 'center', lineHeight: 1.5 }}>
+            {discoveryError}
+          </p>
+        )}
+        <button
+          onClick={discover}
+          style={{
+            marginTop: 20,
+            background: '#21262d',
+            border: '1px solid #30363d',
+            borderRadius: 8,
+            padding: '8px 20px',
+            color: '#e6edf3',
+            fontSize: 13,
+            cursor: 'pointer',
+          }}
+        >
+          Retry
+        </button>
       </div>
     );
   }

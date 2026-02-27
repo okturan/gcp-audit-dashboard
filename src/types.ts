@@ -68,10 +68,20 @@ export interface GCPService {
   projectId?: string; // computed
 }
 
+export interface TimeSeriesPoint {
+  date: string;   // YYYY-MM-DD
+  value: number;
+}
+
 export interface UsageData {
   projectId: string;
   tokenCount?: number;
   requestCount?: number;
+  requestBreakdown?: Record<string, number>;
+  tokenBreakdown?: Record<string, number>;
+  responseCodeBreakdown?: Record<string, number>;  // "2xx" | "4xx" | "5xx" → count
+  requestTimeSeries?: TimeSeriesPoint[];
+  tokenTimeSeries?: TimeSeriesPoint[];
 }
 
 // ─── IAM ──────────────────────────────────────────────────────────────────────

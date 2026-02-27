@@ -1,5 +1,7 @@
 import { useState, useMemo } from 'react';
+import { BarChart, Bar, AreaChart, Area, XAxis, YAxis, Tooltip, LabelList, ResponsiveContainer } from 'recharts';
 import { useGCPStore, addToast } from '../store/useGCPStore';
+import { fmt } from '../utils/format';
 import type { AppNode, IAMBinding, ProjectServiceAccount } from '../types';
 
 function getNodeLabel(node: AppNode): string {
@@ -204,6 +206,24 @@ function NodeDetails({ node }: { node: AppNode }) {
           <ConsoleLink url={`https://console.cloud.google.com/home/dashboard?project=${project.projectId}`} />
         </DetailSection>
 
+        {usage?.requestTimeSeries && usage.requestTimeSeries.length > 1 && (
+          <Sparkline title="Request Trend (30d)" data={usage.requestTimeSeries} color="#1f6feb" />
+        )}
+        {usage?.tokenTimeSeries && usage.tokenTimeSeries.length > 1 && (
+          <Sparkline title="Token Trend (30d)" data={usage.tokenTimeSeries} color="#8957e5" />
+        )}
+
+        {usage?.responseCodeBreakdown && Object.keys(usage.responseCodeBreakdown).length > 0 && (
+          <ResponseCodeBar breakdown={usage.responseCodeBreakdown} total={usage.requestCount ?? 0} />
+        )}
+
+        {usage?.requestBreakdown && Object.keys(usage.requestBreakdown).length > 0 && (
+          <UsageBreakdownChart title="30d Requests by Service" breakdown={usage.requestBreakdown} color="#1f6feb" labelColor="#58a6ff" />
+        )}
+        {usage?.tokenBreakdown && Object.keys(usage.tokenBreakdown).length > 0 && (
+          <UsageBreakdownChart title="30d Tokens by Service" breakdown={usage.tokenBreakdown} color="#8957e5" labelColor="#a78bfa" />
+        )}
+
         {iamBindings.length > 0 && <IAMBindingsSection bindings={iamBindings} />}
 
         {serviceAccounts.length > 0 && <ServiceAccountsSection accounts={serviceAccounts} />}
@@ -304,6 +324,180 @@ function NodeDetails({ node }: { node: AppNode }) {
   }
 
   return null;
+}
+
+const RESPONSE_CODE_COLORS: Record<string, string> = {
+  '2xx': '#3fb950',
+  '3xx': '#58a6ff',
+  '4xx': '#f0883e',
+  '5xx': '#f85149',
+  other: '#8b949e',
+};
+
+const RESPONSE_CODE_ORDER = ['2xx', '3xx', '4xx', '5xx', 'other'];
+
+function ResponseCodeBar({ breakdown, total }: {
+  breakdown: Record<string, number>;
+  total: number;
+}) {
+  if (total === 0) return null;
+  const sorted = RESPONSE_CODE_ORDER.filter((k) => breakdown[k]);
+
+  return (
+    <DetailSection title="Response Codes">
+      {/* Stacked bar */}
+      <div style={{ padding: '10px 12px 6px' }}>
+        <div style={{ display: 'flex', height: 8, borderRadius: 4, overflow: 'hidden', gap: 1 }}>
+          {sorted.map((code) => {
+            const pct = (breakdown[code] / total) * 100;
+            return (
+              <div
+                key={code}
+                style={{
+                  width: `${pct}%`,
+                  minWidth: pct > 0 ? 3 : 0,
+                  background: RESPONSE_CODE_COLORS[code] ?? '#8b949e',
+                }}
+              />
+            );
+          })}
+        </div>
+      </div>
+      {/* Legend rows */}
+      {sorted.map((code) => {
+        const count = breakdown[code];
+        const pct = ((count / total) * 100).toFixed(1);
+        return (
+          <div
+            key={code}
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '4px 12px',
+              borderBottom: '1px solid #21262d',
+              fontSize: 11,
+            }}
+          >
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{
+                width: 8, height: 8, borderRadius: 2,
+                background: RESPONSE_CODE_COLORS[code] ?? '#8b949e',
+                flexShrink: 0,
+              }} />
+              <span style={{ color: '#c9d1d9' }}>{code}</span>
+            </span>
+            <span style={{ color: '#8b949e', fontFamily: 'monospace', fontSize: 10 }}>
+              {fmt(count)}{' '}
+              <span style={{ color: '#7d8590' }}>({pct}%)</span>
+            </span>
+          </div>
+        );
+      })}
+    </DetailSection>
+  );
+}
+
+function Sparkline({ title, data, color }: {
+  title: string;
+  data: { date: string; value: number }[];
+  color: string;
+}) {
+  return (
+    <DetailSection title={title}>
+      <div style={{ padding: '8px 4px 4px' }}>
+        <ResponsiveContainer width="100%" height={64}>
+          <AreaChart data={data} margin={{ top: 4, right: 8, bottom: 0, left: 8 }}>
+            <defs>
+              <linearGradient id={`grad-${color.replace('#', '')}`} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={color} stopOpacity={0.3} />
+                <stop offset="100%" stopColor={color} stopOpacity={0.02} />
+              </linearGradient>
+            </defs>
+            <XAxis dataKey="date" hide />
+            <YAxis hide domain={[0, 'auto']} />
+            <Tooltip
+              cursor={{ stroke: '#30363d' }}
+              contentStyle={{ background: '#161b22', border: '1px solid #30363d', borderRadius: 6, fontSize: 10, color: '#e6edf3' }}
+              labelFormatter={(d) => String(d)}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              formatter={(v: any) => [fmt(Number(v)), '']}
+            />
+            <Area
+              type="monotone"
+              dataKey="value"
+              stroke={color}
+              strokeWidth={1.5}
+              fill={`url(#grad-${color.replace('#', '')})`}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+    </DetailSection>
+  );
+}
+
+function UsageBreakdownChart({ title, breakdown, color, labelColor }: {
+  title: string;
+  breakdown: Record<string, number>;
+  color: string;
+  labelColor: string;
+}) {
+  const data = Object.entries(breakdown)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 10)
+    .map(([name, value]) => ({ name, value }));
+
+  const barHeight = 22;
+  const chartHeight = data.length * barHeight + 24;
+
+  return (
+    <DetailSection title={title}>
+      <div style={{ padding: '8px 4px 4px 4px' }}>
+        <ResponsiveContainer width="100%" height={chartHeight}>
+          <BarChart data={data} layout="vertical" margin={{ top: 0, right: 44, bottom: 0, left: 0 }}>
+            <XAxis type="number" hide domain={[0, (d: number) => Math.ceil(d * 1.15)]} />
+            <YAxis
+              type="category"
+              dataKey="name"
+              width={120}
+              tick={{ fill: '#7d8590', fontSize: 9 }}
+              axisLine={false}
+              tickLine={false}
+            />
+            <Tooltip
+              cursor={{ fill: '#21262d' }}
+              contentStyle={{ background: '#161b22', border: '1px solid #30363d', borderRadius: 6, fontSize: 11, color: '#e6edf3' }}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              formatter={(v: any) => [fmt(Number(v)), '']}
+              labelStyle={{ color: '#c9d1d9' }}
+            />
+            <Bar
+              dataKey="value"
+              radius={[0, 3, 3, 0]}
+              background={{ fill: '#0d1117' }}
+              minPointSize={2}
+              fill={color}
+            >
+              <LabelList
+                dataKey="value"
+                position="right"
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                content={(props: any) => {
+                  const { x, y, width: w, height: h, value } = props;
+                  return (
+                    <text x={x + w + 4} y={y + h / 2 + 3} fill={labelColor} fontSize={9}>
+                      {fmt(Number(value))}
+                    </text>
+                  );
+                }}
+              />
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </DetailSection>
+  );
 }
 
 function CollapsibleSection({ title, children, defaultOpen = false }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) {

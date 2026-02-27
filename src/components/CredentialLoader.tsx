@@ -74,7 +74,7 @@ const STEPS = [
 ];
 
 export function CredentialLoader() {
-  const { oauthClientId, setOAuthClientId, signIn, signInError, claudeApiKey, setClaudeApiKey } =
+  const { oauthClientId, setOAuthClientId, signIn, signInWithGcloud, signInError, claudeApiKey, setClaudeApiKey, gcloudAccounts } =
     useGCPStore();
   const [guideOpen, setGuideOpen] = useState(false);
   const [gisReady, setGisReady] = useState(isGISReady());
@@ -121,6 +121,88 @@ export function CredentialLoader() {
           Sign in with Google to visualise your entire GCP footprint
         </p>
       </div>
+
+      {/* gcloud CLI accounts */}
+      {gcloudAccounts.length > 0 && (
+        <div style={{ width: '100%', maxWidth: 480 }}>
+          <label
+            style={{
+              display: 'block',
+              color: '#8b949e',
+              fontSize: 12,
+              marginBottom: 8,
+              fontWeight: 600,
+              textTransform: 'uppercase',
+              letterSpacing: '0.06em',
+            }}
+          >
+            gcloud CLI accounts
+          </label>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {gcloudAccounts.map((acc) => {
+              const isSA = acc.email.includes('iam.gserviceaccount.com');
+              return (
+                <button
+                  key={acc.email}
+                  onClick={() => signInWithGcloud(acc.email)}
+                  style={{
+                    width: '100%',
+                    background: '#161b22',
+                    border: `1px solid ${isSA ? '#d9770633' : '#30363d'}`,
+                    borderRadius: 8,
+                    padding: '10px 14px',
+                    color: '#e6edf3',
+                    fontSize: 13,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10,
+                    textAlign: 'left',
+                    transition: 'border-color 0.15s',
+                  }}
+                  className="input-field"
+                >
+                  <span style={{
+                    width: 28,
+                    height: 28,
+                    borderRadius: '50%',
+                    background: isSA ? '#1c1a0e' : '#0c1929',
+                    border: `1px solid ${isSA ? '#d9770644' : '#1d4778'}`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 12,
+                    flexShrink: 0,
+                  }}>
+                    {isSA ? '🔧' : '👤'}
+                  </span>
+                  <span style={{ flex: 1, fontFamily: 'monospace', fontSize: 12, wordBreak: 'break-all' }}>
+                    {acc.email}
+                  </span>
+                  {acc.active && (
+                    <span style={{ fontSize: 10, color: '#3fb950', fontWeight: 600, flexShrink: 0 }}>
+                      ACTIVE
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            margin: '16px 0',
+            color: '#7d8590',
+            fontSize: 11,
+          }}>
+            <div style={{ flex: 1, height: 1, background: '#30363d' }} />
+            <span>or sign in with OAuth</span>
+            <div style={{ flex: 1, height: 1, background: '#30363d' }} />
+          </div>
+        </div>
+      )}
 
       {/* OAuth Client ID input */}
       <div style={{ width: '100%', maxWidth: 480 }}>

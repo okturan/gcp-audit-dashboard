@@ -40,12 +40,18 @@ export type ViewId = 'overview' | 'graph' | 'table' | 'charts' | 'findings';
 // Cleared on page refresh (module re-initializes).
 let _manuallySignedOut = false;
 
+export interface GcloudAccount {
+  email: string;
+  active: boolean;
+}
+
 interface GCPStore {
   // Auth
   oauthClientId: string;
   authState: AuthState;
   authMethod: AuthMethod;
   gcloudEmail: string;
+  gcloudAccounts: GcloudAccount[];
   signInError: string | null;
 
   // Claude
@@ -83,6 +89,7 @@ interface GCPStore {
   setOAuthClientId: (id: string) => void;
   autoAuth: () => Promise<void>;
   signIn: () => void;
+  signInWithGcloud: (email: string) => Promise<void>;
   signOut: () => void;
   bumpFitView: () => void;
   setClaudeApiKey: (key: string) => void;
@@ -105,7 +112,9 @@ function scheduleTokenRefresh() {
   // Refresh 5 minutes before the 1-hour expiry
   _refreshTimer = setTimeout(async () => {
     try {
-      const resp = await fetch('/api/gcloud-token');
+      const email = useGCPStore.getState().gcloudEmail;
+      const accountParam = email ? `?account=${encodeURIComponent(email)}` : '';
+      const resp = await fetch(`/api/gcloud-token${accountParam}`);
       if (resp.ok) {
         const data = await resp.json() as { token?: string };
         if (data.token) {
@@ -122,6 +131,7 @@ export const useGCPStore = create<GCPStore>((set, get) => ({
   authState: 'checking',
   authMethod: null,
   gcloudEmail: '',
+  gcloudAccounts: [],
   signInError: null,
 
   claudeApiKey: '',
@@ -155,7 +165,7 @@ export const useGCPStore = create<GCPStore>((set, get) => ({
     set({ oauthClientId: id, signInError: null });
   },
 
-  // Try gcloud CLI auth first — works automatically when running via npm run dev.
+  // Check for available gcloud accounts. If found, present them for selection.
   // Falls back to Google OAuth popup if gcloud isn't available.
   autoAuth: async () => {
     if (_manuallySignedOut) {
@@ -164,22 +174,38 @@ export const useGCPStore = create<GCPStore>((set, get) => ({
     }
     set({ authState: 'checking', signInError: null });
     try {
-      const resp = await fetch('/api/gcloud-token');
+      const resp = await fetch('/api/gcloud-accounts');
       if (resp.ok) {
-        const data = await resp.json() as { token?: string; email?: string; error?: string };
-        if (data.token) {
-          setToken(data.token, 3600);
-          scheduleTokenRefresh();
-          set({ authState: 'signed-in', authMethod: 'gcloud', gcloudEmail: data.email ?? '' });
-          addToast('Signed in via gcloud CLI');
-          // Auto-discover after successful gcloud auth
-          setTimeout(() => get().discover(), 100);
+        const data = await resp.json() as { accounts?: GcloudAccount[] };
+        if (data.accounts && data.accounts.length > 0) {
+          set({ gcloudAccounts: data.accounts, authState: 'signed-out' });
           return;
         }
       }
     } catch { /* gcloud not available */ }
     // gcloud path failed — stay on sign-in screen for manual OAuth
     set({ authState: 'signed-out' });
+  },
+
+  // Sign in with a specific gcloud CLI account
+  signInWithGcloud: async (email: string) => {
+    set({ authState: 'checking', signInError: null });
+    try {
+      const resp = await fetch(`/api/gcloud-token?account=${encodeURIComponent(email)}`);
+      if (resp.ok) {
+        const data = await resp.json() as { token?: string; email?: string; error?: string };
+        if (data.token) {
+          setToken(data.token, 3600);
+          scheduleTokenRefresh();
+          set({ authState: 'signed-in', authMethod: 'gcloud', gcloudEmail: email });
+          addToast(`Signed in as ${email}`);
+          return;
+        }
+      }
+      set({ authState: 'signed-out', signInError: `Failed to get token for ${email}` });
+    } catch (err) {
+      set({ authState: 'signed-out', signInError: err instanceof Error ? err.message : String(err) });
+    }
   },
 
   signIn: () => {
@@ -204,6 +230,7 @@ export const useGCPStore = create<GCPStore>((set, get) => ({
       authState: 'signed-out',
       authMethod: null,
       gcloudEmail: '',
+      gcloudAccounts: [],
       nodes: [],
       edges: [],
       rawBillingAccounts: [],

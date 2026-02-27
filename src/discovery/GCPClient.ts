@@ -1,4 +1,5 @@
 import { getToken, setToken } from '../auth/GoogleOAuth';
+import { useGCPStore } from '../store/useGCPStore';
 
 // Deduplicate concurrent token refresh requests — multiple gcpFetch() calls
 // that fire while the token is expired will share a single in-flight refresh.
@@ -15,7 +16,9 @@ async function getValidToken(): Promise<string> {
 
   _inflightTokenRefresh = (async () => {
     try {
-      const resp = await fetch('/api/gcloud-token');
+      const email = useGCPStore.getState().gcloudEmail;
+      const accountParam = email ? `?account=${encodeURIComponent(email)}` : '';
+      const resp = await fetch(`/api/gcloud-token${accountParam}`);
       if (resp.ok) {
         const data = await resp.json() as { token?: string; email?: string; error?: string };
         if (data.token) {
@@ -52,7 +55,18 @@ export async function gcpFetch<T>(url: string, options: RequestInit = {}, signal
   if (!resp.ok) {
     const body = await resp.text();
     console.warn(`GCP API ${resp.status} ${resp.url}:`, body);
-    throw new Error(`GCP API error ${resp.status}`);
+
+    // Try to extract a meaningful message from GCP's JSON error envelope
+    let message = `GCP API error ${resp.status}`;
+    try {
+      const parsed = JSON.parse(body);
+      const errObj = parsed?.error;
+      if (errObj?.message) {
+        message = errObj.message;
+      }
+    } catch { /* body wasn't JSON */ }
+
+    throw new Error(message);
   }
 
   return resp.json() as Promise<T>;
