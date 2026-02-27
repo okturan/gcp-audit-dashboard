@@ -9,11 +9,21 @@
 </p>
 
 <p align="center">
-  <img alt="License" src="https://img.shields.io/badge/license-MIT-blue.svg" />
-  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white" />
-  <img alt="React" src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white" />
-  <img alt="Vite" src="https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white" />
-  <img alt="Build" src="https://img.shields.io/badge/build-passing-brightgreen" />
+  <a href="LICENSE">
+    <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square" />
+  </a>
+  <img alt="TypeScript 5.9" src="https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white&style=flat-square" />
+  <img alt="React 19" src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white&style=flat-square" />
+  <img alt="Vite 7" src="https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white&style=flat-square" />
+  <img alt="Build Passing" src="https://img.shields.io/badge/build-passing-brightgreen?style=flat-square" />
+</p>
+
+<p align="center">
+  <a href="#-quick-start">Quick Start</a> •
+  <a href="#-features">Features</a> •
+  <a href="#-how-it-works">How It Works</a> •
+  <a href="#-security-model">Security</a> •
+  <a href="#-export">Export</a>
 </p>
 
 ---
@@ -22,27 +32,36 @@ GCP Audit Dashboard connects to your Google Cloud account using OAuth or the gcl
 
 ## Features
 
-- **Automatic resource discovery** - Scans billing accounts, projects, API keys, enabled services, IAM policies, service accounts, and usage metrics in parallel
-- **Interactive graph visualization** - Explore your GCP hierarchy as a force-directed node graph with color-coded resource types and automatic Dagre layout
-- **Built-in security findings** - Detects unrestricted API keys, stale keys (90d/180d), public IAM bindings, deleted principals, disabled service accounts with active roles, zombie projects, and overprivileged service accounts
-- **Security health score** - A 0-100 score calculated from critical findings and warnings, displayed as a donut chart on the overview dashboard
-- **AI-powered analysis (optional)** - Send your discovered infrastructure to Claude for deeper security and cost insights with per-resource severity ratings and actionable suggestions
-- **Five dashboard views** - Overview (stats + charts + top findings), Graph (interactive node map), Table (sortable resource list), Charts (usage bar charts), and Findings (filterable security report)
+- **Automatic Resource Discovery** - Scans billing accounts, projects, API keys, enabled services, IAM policies, service accounts, and usage metrics in parallel
+- **Interactive Graph Visualization** - Explore your GCP hierarchy as a force-directed node graph with color-coded resource types and automatic Dagre layout
+- **Built-in Security Findings** - Detects unrestricted API keys, stale keys (90d/180d), public IAM bindings, deleted principals, disabled service accounts with active roles, zombie projects, and overprivileged service accounts
+- **Security Health Score** - A 0-100 score calculated from critical findings and warnings, displayed as a donut chart on the overview dashboard
+- **AI-Powered Analysis (Optional)** - Send your discovered infrastructure to Claude for deeper security and cost insights with per-resource severity ratings and actionable suggestions
+- **Five Dashboard Views** - Overview (stats + charts + top findings), Graph (interactive node map), Table (sortable resource list), Charts (usage bar charts), and Findings (filterable security report)
 - **Export to JSON and CSV** - Download your full audit data as structured JSON or a flat CSV of projects, keys, and services
-- **Detail drawer** - Click any resource to open a side panel with full metadata, IAM bindings, and service details
-- **Search and filter** - Filter the graph by resource type or search across all nodes
-- **Dark theme** - Purpose-built dark UI optimized for security operations
+- **Detail Drawer** - Click any resource to open a side panel with full metadata, IAM bindings, and service details
+- **Search and Filter** - Filter the graph by resource type or search across all nodes
+- **Dark Theme** - Purpose-built dark UI optimized for security operations
 
 ## Screenshots
 
-![Overview Dashboard](docs/screenshots/overview.png)
-*Overview dashboard with health score, stat cards, top findings, and usage charts*
+<p align="center">
+  <img src="docs/screenshots/overview.png" alt="Overview Dashboard" width="800" />
+  <br/>
+  <em>Overview dashboard with health score, stat cards, top findings, and usage charts</em>
+</p>
 
-![Graph View](docs/screenshots/graph.png)
-*Interactive node graph showing billing accounts, projects, API keys, and services*
+<p align="center">
+  <img src="docs/screenshots/graph.png" alt="Graph View" width="800" />
+  <br/>
+  <em>Interactive node graph showing billing accounts, projects, API keys, and services</em>
+</p>
 
-![Findings View](docs/screenshots/findings.png)
-*Security findings view with severity filtering and one-click navigation to affected resources*
+<p align="center">
+  <img src="docs/screenshots/findings.png" alt="Findings View" width="800" />
+  <br/>
+  <em>Security findings view with severity filtering and one-click navigation to affected resources</em>
+</p>
 
 ## Quick Start
 
@@ -52,7 +71,7 @@ GCP Audit Dashboard connects to your Google Cloud account using OAuth or the gcl
 - **Google Cloud account** with at least one project
 - **gcloud CLI** installed and authenticated (recommended), or a Google OAuth Client ID
 
-### Install and run
+### Install and Run
 
 ```bash
 # Clone the repository
@@ -80,7 +99,7 @@ If you prefer OAuth instead of the gcloud CLI:
 2. Add `http://localhost:5173` as an authorized JavaScript origin
 3. Paste the Client ID into the sign-in screen and click **Sign In with Google**
 
-### Production build
+### Production Build
 
 ```bash
 npm run build
@@ -113,20 +132,20 @@ The `discoverAll()` orchestrator runs in parallel:
 3. Uses `Promise.allSettled` throughout so a single API failure never blocks the full scan
 4. Reports real-time progress (e.g., "Loading project 3 of 12")
 
-### 3. Graph building
+### 3. Graph Building
 
 Discovered resources are converted into typed React Flow nodes with a deterministic ID scheme:
 
-| Resource        | Node ID format                      | Color        |
-|-----------------|-------------------------------------|--------------|
-| Billing Account | `billing-{accountId}`               | Gold/amber   |
-| Project         | `project-{projectId}`               | Blue         |
-| API Key         | `apikey-{uid}`                      | Green        |
-| Service         | `service-{projectId}-{serviceName}` | Gray         |
+| Resource | Node ID Format | Color |
+|----------|----------------|-------|
+| Billing Account | `billing-{accountId}` | Gold/amber |
+| Project | `project-{projectId}` | Blue |
+| API Key | `apikey-{uid}` | Green |
+| Service | `service-{projectId}-{serviceName}` | Gray |
 
 Edges connect projects to their billing account, and API keys and services to their parent project. Layout is computed using the Dagre algorithm.
 
-### 4. AI analysis (optional)
+### 4. AI Analysis (Optional)
 
 If you provide a Claude API key, the dashboard sends a compact JSON summary of your infrastructure to Claude Sonnet. Claude returns per-resource insights with severity levels (green / yellow / red), one-line summaries, and actionable suggestions. Insights are overlaid onto the graph nodes and surfaced in the findings view.
 
@@ -134,71 +153,71 @@ If you provide a Claude API key, the dashboard sends a compact JSON summary of y
 
 This project was designed with security as a first-class concern:
 
-- **Fully client-side** - There is no backend server. All API calls go directly from the browser to Google Cloud APIs and (optionally) the Anthropic API.
-- **No token persistence** - OAuth access tokens are held in JavaScript module-scoped variables, never written to localStorage or cookies. They are lost on page close.
-- **No API key persistence** - The Claude API key is kept in component state only. It is never persisted to any storage.
-- **Read-only scopes** - The app only requests `read-only` and `readonly` OAuth scopes. It cannot modify your GCP resources.
+- **Fully Client-Side** - There is no backend server. All API calls go directly from the browser to Google Cloud APIs and (optionally) the Anthropic API.
+- **No Token Persistence** - OAuth access tokens are held in JavaScript module-scoped variables, never written to localStorage or cookies. They are lost on page close.
+- **No API Key Persistence** - The Claude API key is kept in component state only. It is never persisted to any storage.
+- **Read-Only Scopes** - The app only requests `read-only` and `readonly` OAuth scopes. It cannot modify your GCP resources.
 - **Content Security Policy** - The HTML includes a strict CSP header that restricts script sources to `self` and `accounts.google.com`, blocks iframes entirely, and limits network connections to `*.googleapis.com`.
-- **Session cache with expiry** - Discovery results are cached in `sessionStorage` for page-refresh resilience but expire after 30 minutes and are validated before use.
+- **Session Cache with Expiry** - Discovery results are cached in `sessionStorage` for page-refresh resilience but expire after 30 minutes and are validated before use.
 
 ## Tech Stack
 
-| Layer           | Technology                                                                 |
-|-----------------|----------------------------------------------------------------------------|
-| Framework       | [React 19](https://react.dev)                                             |
-| Language        | [TypeScript 5.9](https://www.typescriptlang.org)                          |
-| Build tool      | [Vite 7](https://vite.dev)                                                |
-| Graph rendering | [@xyflow/react 12](https://reactflow.dev) (React Flow)                    |
-| Graph layout    | [Dagre](https://github.com/dagrejs/dagre) (directed acyclic graph layout) |
-| Charts          | [Recharts 3](https://recharts.org)                                        |
-| State           | [Zustand 5](https://zustand.docs.pmnd.rs)                                 |
-| AI analysis     | [Anthropic SDK](https://docs.anthropic.com) (Claude Sonnet)               |
-| Auth            | [Google Identity Services](https://developers.google.com/identity)        |
+| Layer | Technology |
+|-------|------------|
+| Framework | [React 19](https://react.dev) |
+| Language | [TypeScript 5.9](https://www.typescriptlang.org) |
+| Build Tool | [Vite 7](https://vite.dev) |
+| Graph Rendering | [@xyflow/react 12](https://reactflow.dev) (React Flow) |
+| Graph Layout | [Dagre](https://github.com/dagrejs/dagre) (directed acyclic graph layout) |
+| Charts | [Recharts 3](https://recharts.org) |
+| State | [Zustand 5](https://zustand.docs.pmnd.rs) |
+| AI Analysis | [Anthropic SDK](https://docs.anthropic.com) (Claude Sonnet) |
+| Auth | [Google Identity Services](https://developers.google.com/identity) |
 
 ## Project Structure
 
 ```
 src/
-  auth/
-    GoogleOAuth.ts        # OAuth token management and GIS integration
-  claude/
-    enricher.ts           # Sends GCP data to Claude, parses insights
-  components/
-    CredentialLoader.tsx   # Sign-in screen (gcloud auto-detect + OAuth)
-    DetailDrawer.tsx       # Slide-out resource detail panel
-    DetailPanel.tsx        # Full resource metadata renderer
-    GraphCanvas.tsx        # React Flow canvas with custom nodes
-    ListPanel.tsx          # Scrollable resource list sidebar
-    Toolbar.tsx            # Top bar with actions, search, and export
-  discovery/
-    index.ts              # discoverAll() orchestrator
-    billing.ts            # Billing Accounts API
-    projects.ts           # Resource Manager API
-    apikeys.ts            # API Keys API
-    services.ts           # Service Usage API
-    monitoring.ts         # Cloud Monitoring (usage metrics)
-    iam.ts                # IAM Policy API
-    serviceaccounts.ts    # IAM Service Accounts API
-    GCPClient.ts          # Shared fetch wrapper with auth headers
-    constants.ts          # API base URLs
-  graph/
-    builder.ts            # Transforms GCP data into React Flow nodes/edges
-    layout.ts             # Dagre layout computation
-    nodes/                # Custom node components (Billing, Project, Key, Service)
-  store/
-    useGCPStore.ts        # Zustand store (auth, discovery, insights, UI state)
-  utils/
-    findings.ts           # Rule-based security finding computation
-    format.ts             # Number formatting helpers
-  views/
-    OverviewView.tsx      # Dashboard with health score, stats, charts
-    GraphView.tsx         # Interactive node graph
-    TableView.tsx         # Sortable resource table
-    ChartsView.tsx        # Usage bar charts (requests, tokens)
-    FindingsView.tsx      # Security findings with severity filter
-  types.ts                # All shared TypeScript interfaces
-  App.tsx                 # Root layout and view router
-  main.tsx                # Entry point
+├── auth/
+│   └── GoogleOAuth.ts           # OAuth token management and GIS integration
+├── claude/
+│   └── enricher.ts              # Sends GCP data to Claude, parses insights
+├── components/
+│   ├── CredentialLoader.tsx     # Sign-in screen (gcloud auto-detect + OAuth)
+│   ├── DetailDrawer.tsx         # Slide-out resource detail panel
+│   ├── DetailPanel.tsx          # Full resource metadata renderer
+│   ├── GraphCanvas.tsx          # React Flow canvas with custom nodes
+│   ├── ListPanel.tsx            # Scrollable resource list sidebar
+│   └── Toolbar.tsx              # Top bar with actions, search, and export
+├── discovery/
+│   ├── index.ts                 # discoverAll() orchestrator
+│   ├── billing.ts               # Billing Accounts API
+│   ├── projects.ts              # Resource Manager API
+│   ├── apikeys.ts               # API Keys API
+│   ├── services.ts              # Service Usage API
+│   ├── monitoring.ts            # Cloud Monitoring (usage metrics)
+│   ├── iam.ts                   # IAM Policy API
+│   ├── serviceaccounts.ts       # IAM Service Accounts API
+│   ├── GCPClient.ts             # Shared fetch wrapper with auth headers
+│   └── constants.ts             # API base URLs
+├── graph/
+│   ├── builder.ts               # Transforms GCP data into React Flow nodes/edges
+│   ├── layout.ts                # Dagre layout computation
+│   └── nodes/                   # Custom node components (Billing, Project, Key, Service)
+├── store/
+│   └── useGCPStore.ts           # Zustand store (auth, discovery, insights, UI state)
+├── utils/
+│   ├── findings.ts              # Rule-based security finding computation
+│   └── format.ts                # Number formatting helpers
+├── views/
+│   ├── OverviewView.tsx         # Dashboard with health score, stats, charts
+│   ├── GraphView.tsx            # Interactive node graph
+│   ├── TableView.tsx            # Sortable resource table
+│   ├── ChartsView.tsx           # Usage bar charts (requests, tokens)
+│   └── FindingsView.tsx         # Security findings with severity filter
+├── types.ts                     # All shared TypeScript interfaces
+├── App.tsx                      # Root layout and view router
+└── main.tsx                     # Entry point
 ```
 
 ## Export
