@@ -136,7 +136,7 @@ export function CredentialLoader() {
               letterSpacing: '0.06em',
             }}
           >
-            gcloud CLI accounts
+            Choose an account
           </label>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {gcloudAccounts.map((acc) => {
@@ -176,118 +176,22 @@ export function CredentialLoader() {
                   }}>
                     {isSA ? '🔧' : '👤'}
                   </span>
-                  <span style={{ flex: 1, fontFamily: 'monospace', fontSize: 12, wordBreak: 'break-all' }}>
-                    {acc.email}
-                  </span>
-                  {acc.active && (
-                    <span style={{ fontSize: 10, color: '#3fb950', fontWeight: 600, flexShrink: 0 }}>
-                      ACTIVE
-                    </span>
-                  )}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontFamily: 'monospace', fontSize: 12, wordBreak: 'break-all' }}>
+                      {acc.email}
+                    </div>
+                    {isSA && (
+                      <div style={{ fontSize: 10, color: '#8b949e', marginTop: 2 }}>Service account</div>
+                    )}
+                  </div>
                 </button>
               );
             })}
           </div>
 
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 12,
-            margin: '16px 0',
-            color: '#7d8590',
-            fontSize: 11,
-          }}>
-            <div style={{ flex: 1, height: 1, background: '#30363d' }} />
-            <span>or sign in with OAuth</span>
-            <div style={{ flex: 1, height: 1, background: '#30363d' }} />
+          <div style={{ fontSize: 11, color: '#7d8590', marginTop: 10, textAlign: 'center' }}>
+            Accounts from <code style={{ color: '#8b949e' }}>gcloud auth list</code>
           </div>
-        </div>
-      )}
-
-      {/* OAuth Client ID input */}
-      <div style={{ width: '100%', maxWidth: 480 }}>
-        <label
-          style={{
-            display: 'block',
-            color: '#8b949e',
-            fontSize: 12,
-            marginBottom: 6,
-            fontWeight: 600,
-            textTransform: 'uppercase',
-            letterSpacing: '0.06em',
-          }}
-        >
-          OAuth Client ID
-        </label>
-        <input
-          type="text"
-          className="input-field"
-          placeholder="xxxxxxxx.apps.googleusercontent.com"
-          value={oauthClientId}
-          onChange={(e) => setOAuthClientId(e.target.value)}
-          style={{
-            width: '100%',
-            background: '#161b22',
-            border: '1px solid #30363d',
-            borderRadius: 8,
-            padding: '10px 14px',
-            color: '#e6edf3',
-            fontSize: 13,
-            outline: 'none',
-            fontFamily: 'monospace',
-          }}
-        />
-      </div>
-
-      {/* Sign in button */}
-      <button
-        onClick={signIn}
-        disabled={!oauthClientId || !gisReady}
-        className="btn-primary"
-        style={{
-          width: '100%',
-          maxWidth: 480,
-          background: oauthClientId && gisReady ? '#1f6feb' : '#21262d',
-          border: 'none',
-          borderRadius: 8,
-          padding: '12px 24px',
-          color: oauthClientId && gisReady ? '#ffffff' : '#7d8590',
-          fontSize: 14,
-          fontWeight: 600,
-          cursor: oauthClientId && gisReady ? 'pointer' : 'not-allowed',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 10,
-          transition: 'filter 0.15s, box-shadow 0.15s',
-        }}
-      >
-        <svg width="18" height="18" viewBox="0 0 18 18">
-          <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/>
-          <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/>
-          <path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/>
-          <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/>
-        </svg>
-        {gisLoadError ? 'Sign-in unavailable' : gisReady ? 'Sign in with Google' : 'Loading…'}
-      </button>
-
-      {/* GIS load error */}
-      {gisLoadError && (
-        <div
-          style={{
-            background: '#2d0f0f',
-            border: '1px solid #f8514944',
-            borderLeft: '3px solid #f85149',
-            borderRadius: 8,
-            padding: '12px 16px',
-            color: '#f85149',
-            fontSize: 13,
-            maxWidth: 480,
-            width: '100%',
-          }}
-        >
-          Google sign-in failed to load. It may be blocked by an ad blocker or network issue.
-          Try disabling extensions or refreshing the page.
         </div>
       )}
 
@@ -346,85 +250,177 @@ export function CredentialLoader() {
         />
       </div>
 
-      {/* Collapsible setup guide */}
-      <div style={{ width: '100%', maxWidth: 480 }}>
-        <button
-          onClick={() => setGuideOpen((o) => !o)}
-          style={{
-            width: '100%',
-            background: '#161b22',
-            border: '1px solid #30363d',
-            borderRadius: guideOpen ? '8px 8px 0 0' : 8,
-            padding: '12px 16px',
-            color: '#c9d1d9',
-            fontSize: 13,
-            fontWeight: 600,
-            cursor: 'pointer',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <span>Don't have a Client ID yet? Here's how to get one</span>
-          <span style={{ color: '#8b949e' }}>{guideOpen ? '▲' : '▼'}</span>
-        </button>
-
-        {guideOpen && (
-          <div
-            style={{
-              background: '#161b22',
-              border: '1px solid #30363d',
-              borderTop: '1px solid #21262d',
-              borderRadius: '0 0 8px 8px',
-              padding: 16,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 16,
-            }}
-          >
-            {STEPS.map((step) => (
-              <div key={step.n} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-                <div
-                  style={{
-                    width: 22,
-                    height: 22,
-                    borderRadius: '50%',
-                    background: '#0c1929',
-                    border: '1px solid #1d4778',
-                    color: '#58a6ff',
-                    fontSize: 11,
-                    fontWeight: 700,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                    marginTop: 1,
-                  }}
-                >
-                  {step.n}
-                </div>
-                <div style={{ fontSize: 12, lineHeight: 1.7, color: '#8b949e' }}>
-                  <div style={{ color: '#c9d1d9', fontWeight: 600, marginBottom: 3 }}>
-                    {step.title}
-                  </div>
-                  {step.body}
-                </div>
-              </div>
-            ))}
-            <div
+      {/* OAuth fallback — only show when no gcloud accounts available */}
+      {gcloudAccounts.length === 0 && (
+        <>
+          {/* OAuth Client ID input */}
+          <div style={{ width: '100%', maxWidth: 480 }}>
+            <label
               style={{
-                fontSize: 11,
-                color: '#7d8590',
-                borderTop: '1px solid #21262d',
-                paddingTop: 12,
+                display: 'block',
+                color: '#8b949e',
+                fontSize: 12,
+                marginBottom: 6,
+                fontWeight: 600,
+                textTransform: 'uppercase',
+                letterSpacing: '0.06em',
               }}
             >
-              The OAuth Client ID is not a secret. Only read-only scopes are requested. Your
-              credentials are never sent anywhere except Google's own servers.
-            </div>
+              OAuth Client ID
+            </label>
+            <input
+              type="text"
+              className="input-field"
+              placeholder="xxxxxxxx.apps.googleusercontent.com"
+              value={oauthClientId}
+              onChange={(e) => setOAuthClientId(e.target.value)}
+              style={{
+                width: '100%',
+                background: '#161b22',
+                border: '1px solid #30363d',
+                borderRadius: 8,
+                padding: '10px 14px',
+                color: '#e6edf3',
+                fontSize: 13,
+                outline: 'none',
+                fontFamily: 'monospace',
+              }}
+            />
           </div>
-        )}
-      </div>
+
+          {/* Sign in button */}
+          <button
+            onClick={signIn}
+            disabled={!oauthClientId || !gisReady}
+            className="btn-primary"
+            style={{
+              width: '100%',
+              maxWidth: 480,
+              background: oauthClientId && gisReady ? '#1f6feb' : '#21262d',
+              border: 'none',
+              borderRadius: 8,
+              padding: '12px 24px',
+              color: oauthClientId && gisReady ? '#ffffff' : '#7d8590',
+              fontSize: 14,
+              fontWeight: 600,
+              cursor: oauthClientId && gisReady ? 'pointer' : 'not-allowed',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 10,
+              transition: 'filter 0.15s, box-shadow 0.15s',
+            }}
+          >
+            <svg width="18" height="18" viewBox="0 0 18 18">
+              <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/>
+              <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/>
+              <path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/>
+              <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/>
+            </svg>
+            {gisLoadError ? 'Sign-in unavailable' : gisReady ? 'Sign in with Google' : 'Loading…'}
+          </button>
+
+          {/* GIS load error */}
+          {gisLoadError && (
+            <div
+              style={{
+                background: '#2d0f0f',
+                border: '1px solid #f8514944',
+                borderLeft: '3px solid #f85149',
+                borderRadius: 8,
+                padding: '12px 16px',
+                color: '#f85149',
+                fontSize: 13,
+                maxWidth: 480,
+                width: '100%',
+              }}
+            >
+              Google sign-in failed to load. It may be blocked by an ad blocker or network issue.
+              Try disabling extensions or refreshing the page.
+            </div>
+          )}
+
+          {/* Collapsible setup guide */}
+          <div style={{ width: '100%', maxWidth: 480 }}>
+            <button
+              onClick={() => setGuideOpen((o) => !o)}
+              style={{
+                width: '100%',
+                background: '#161b22',
+                border: '1px solid #30363d',
+                borderRadius: guideOpen ? '8px 8px 0 0' : 8,
+                padding: '12px 16px',
+                color: '#c9d1d9',
+                fontSize: 13,
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              <span>Don't have a Client ID yet? Here's how to get one</span>
+              <span style={{ color: '#8b949e' }}>{guideOpen ? '▲' : '▼'}</span>
+            </button>
+
+            {guideOpen && (
+              <div
+                style={{
+                  background: '#161b22',
+                  border: '1px solid #30363d',
+                  borderTop: '1px solid #21262d',
+                  borderRadius: '0 0 8px 8px',
+                  padding: 16,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 16,
+                }}
+              >
+                {STEPS.map((step) => (
+                  <div key={step.n} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+                    <div
+                      style={{
+                        width: 22,
+                        height: 22,
+                        borderRadius: '50%',
+                        background: '#0c1929',
+                        border: '1px solid #1d4778',
+                        color: '#58a6ff',
+                        fontSize: 11,
+                        fontWeight: 700,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                        marginTop: 1,
+                      }}
+                    >
+                      {step.n}
+                    </div>
+                    <div style={{ fontSize: 12, lineHeight: 1.7, color: '#8b949e' }}>
+                      <div style={{ color: '#c9d1d9', fontWeight: 600, marginBottom: 3 }}>
+                        {step.title}
+                      </div>
+                      {step.body}
+                    </div>
+                  </div>
+                ))}
+                <div
+                  style={{
+                    fontSize: 11,
+                    color: '#7d8590',
+                    borderTop: '1px solid #21262d',
+                    paddingTop: 12,
+                  }}
+                >
+                  The OAuth Client ID is not a secret. Only read-only scopes are requested. Your
+                  credentials are never sent anywhere except Google's own servers.
+                </div>
+              </div>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }

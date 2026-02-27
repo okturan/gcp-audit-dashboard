@@ -50,7 +50,7 @@ export const ServiceNode = memo(function ServiceNode({ data, selected }: NodePro
       <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 4 }}>
         <span style={{ fontSize: 11 }}>⚙</span>
         <span
-          style={{ fontSize: 9, fontWeight: 600, color: '#8b949e', textTransform: 'uppercase', letterSpacing: '0.07em' }}
+          style={{ fontSize: 9, fontWeight: 600, color: '#b1bac4', textTransform: 'uppercase', letterSpacing: '0.07em' }}
         >
           Service
         </span>
@@ -72,7 +72,7 @@ export const ServiceNode = memo(function ServiceNode({ data, selected }: NodePro
       <div
         style={{
           fontSize: 9,
-          color: '#8b949e',
+          color: '#b1bac4',
           marginTop: 2,
           whiteSpace: 'nowrap',
           overflow: 'hidden',
@@ -92,7 +92,7 @@ export const ServiceNode = memo(function ServiceNode({ data, selected }: NodePro
           bottom: 6,
           right: 8,
           fontSize: 10,
-          color: '#8b949e',
+          color: '#b1bac4',
           textDecoration: 'none',
         }}
         title="Open in GCP Console"

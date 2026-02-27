@@ -122,7 +122,7 @@ export const APIKeyNode = memo(function APIKeyNode({ data, selected }: NodeProps
         <div
           style={{
             fontSize: 10,
-            color: '#8b949e',
+            color: '#b1bac4',
             marginTop: 3,
             whiteSpace: 'nowrap',
             overflow: 'hidden',
@@ -133,7 +133,7 @@ export const APIKeyNode = memo(function APIKeyNode({ data, selected }: NodeProps
           {restrictions}
         </div>
       )}
-      <div style={{ fontSize: 10, color: '#8b949e', marginTop: 3 }}>Created {createdDate}</div>
+      <div style={{ fontSize: 10, color: '#b1bac4', marginTop: 3 }}>Created {createdDate}</div>
 
       <a
         href={consoleUrl}
@@ -146,7 +146,7 @@ export const APIKeyNode = memo(function APIKeyNode({ data, selected }: NodeProps
           bottom: 8,
           right: 10,
           fontSize: 11,
-          color: '#8b949e',
+          color: '#b1bac4',
           textDecoration: 'none',
         }}
         title="Open in GCP Console"

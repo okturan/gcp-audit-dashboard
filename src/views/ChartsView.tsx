@@ -60,6 +60,7 @@ function HBar({
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           formatter={(v: any) => [fmt(Number(v)), dataKey]}
           labelStyle={{ color: '#c9d1d9' }}
+          itemStyle={{ color: '#e6edf3' }}
         />
         <Bar dataKey="value" radius={[0, 3, 3, 0]} background={{ fill: CHART_BG }} minPointSize={2}>
           {data.map((entry, i) => (

@@ -32,6 +32,7 @@ body {
 }
 
 /* React Flow dark overrides */
+.react-flow { --xy-node-color: #e6edf3; }
 .react-flow__background { background: #0d1117 !important; }
 .react-flow__minimap {
   background: #161b22 !important;

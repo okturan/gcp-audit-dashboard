@@ -237,6 +237,8 @@ function FlowInner({ onContextMenu }: { onContextMenu?: (ctx: { x: number; y: nu
   return (
     <>
       <ReactFlow
+        className="dark"
+        colorMode="dark"
         nodes={styledNodes}
         edges={edges}
         nodeTypes={nodeTypes}

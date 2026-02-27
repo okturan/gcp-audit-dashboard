@@ -91,7 +91,7 @@ export const ProjectNode = memo(function ProjectNode({ data, selected }: NodePro
       <div
         style={{
           fontSize: 10,
-          color: '#8b949e',
+          color: '#b1bac4',
           marginTop: 2,
           whiteSpace: 'nowrap',
           overflow: 'hidden',
@@ -101,7 +101,7 @@ export const ProjectNode = memo(function ProjectNode({ data, selected }: NodePro
         {project.projectId}
       </div>
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8, fontSize: 10, color: '#8b949e' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8, fontSize: 10, color: '#b1bac4' }}>
         {apiKeyCount > 0 && <span>🔑 {apiKeyCount} keys</span>}
         {saCount > 0 && <span>🤖 {saCount} SAs</span>}
         {iamMemberCount > 0 && <span>🔒 {iamMemberCount} IAM</span>}
@@ -123,7 +123,7 @@ export const ProjectNode = memo(function ProjectNode({ data, selected }: NodePro
           background: 'transparent',
           padding: 0,
           fontSize: 10,
-          color: '#8b949e',
+          color: '#b1bac4',
           cursor: 'pointer',
           textDecoration: 'none',
         }}
@@ -150,7 +150,7 @@ export const ProjectNode = memo(function ProjectNode({ data, selected }: NodePro
                   border: '1px solid #30363d',
                   borderRadius: 999,
                   padding: '2px 7px',
-                  color: '#8b949e',
+                  color: '#b1bac4',
                   background: '#0d1117',
                 }}
               >
@@ -170,7 +170,7 @@ export const ProjectNode = memo(function ProjectNode({ data, selected }: NodePro
           className="node-console-link"
           style={{
             fontSize: 11,
-            color: '#8b949e',
+            color: '#b1bac4',
             textDecoration: 'none',
           }}
           title="Open in GCP Console"

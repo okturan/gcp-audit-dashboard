@@ -86,13 +86,13 @@ export const BillingAccountNode = memo(function BillingAccountNode({ data, selec
       >
         {ba.displayName || accountId}
       </div>
-      <div style={{ fontSize: 10, color: '#8b949e', marginTop: 3 }}>
+      <div style={{ fontSize: 10, color: '#b1bac4', marginTop: 3 }}>
         {accountId}
       </div>
-      <div style={{ fontSize: 10, color: '#8b949e', marginTop: 2 }}>
+      <div style={{ fontSize: 10, color: '#b1bac4', marginTop: 2 }}>
         Currency: {ba.currencyCode}
       </div>
-      <div style={{ fontSize: 10, color: '#8b949e', marginTop: 2 }}>
+      <div style={{ fontSize: 10, color: '#b1bac4', marginTop: 2 }}>
         {projectCount} {projectCount === 1 ? 'project' : 'projects'}
       </div>
 
@@ -107,7 +107,7 @@ export const BillingAccountNode = memo(function BillingAccountNode({ data, selec
           bottom: 8,
           right: 10,
           fontSize: 11,
-          color: '#8b949e',
+          color: '#b1bac4',
           textDecoration: 'none',
         }}
         title="Open in GCP Console"

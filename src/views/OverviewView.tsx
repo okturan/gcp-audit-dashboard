@@ -438,6 +438,7 @@ function MiniBarChart({ title, data, color, labelColor, onBarClick }: {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             formatter={(v: any) => [fmt(Number(v)), '']}
             labelStyle={{ color: '#c9d1d9' }}
+            itemStyle={{ color: '#e6edf3' }}
           />
           <Bar
             dataKey="value"

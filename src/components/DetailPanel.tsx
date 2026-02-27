@@ -422,6 +422,8 @@ function Sparkline({ title, data, color }: {
               labelFormatter={(d) => String(d)}
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               formatter={(v: any) => [fmt(Number(v)), '']}
+              labelStyle={{ color: '#c9d1d9' }}
+              itemStyle={{ color: '#e6edf3' }}
             />
             <Area
               type="monotone"
@@ -471,6 +473,7 @@ function UsageBreakdownChart({ title, breakdown, color, labelColor }: {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               formatter={(v: any) => [fmt(Number(v)), '']}
               labelStyle={{ color: '#c9d1d9' }}
+              itemStyle={{ color: '#e6edf3' }}
             />
             <Bar
               dataKey="value"
