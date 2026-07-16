@@ -6,6 +6,7 @@ import type {
   BillingAccountNodeType,
   ProjectNodeType,
   APIKeyNodeType,
+  ServiceNodeType,
   InsightsMap,
 } from '../types';
 import { applyTreeLayout } from './layout';
@@ -14,6 +15,8 @@ import { applyTreeLayout } from './layout';
 export const billingNodeId = (ba: BillingAccount) => `billing-${ba.name.split('/')[1]}`;
 export const projectNodeId = (projectId: string) => `project-${projectId}`;
 export const apiKeyNodeId = (uid: string) => `apikey-${uid}`;
+export const serviceNodeId = (projectId: string, serviceName: string) =>
+  `service-${projectId}-${serviceName}`;
 
 // ── Build graph ────────────────────────────────────────────────────────────────
 export function buildGraph(
@@ -96,6 +99,19 @@ export function buildGraph(
       };
       nodes.push(keyNode);
       edges.push({ id: `e-${projId}-${keyId}`, source: projId, target: keyId });
+    }
+
+    // Enabled service nodes
+    for (const service of services) {
+      const serviceId = serviceNodeId(pid, service.config.name);
+      const serviceNode: ServiceNodeType = {
+        id: serviceId,
+        type: 'service',
+        position: { x: 0, y: 0 },
+        data: { service, projectId: pid, insight: insights[serviceId] },
+      };
+      nodes.push(serviceNode);
+      edges.push({ id: `e-${projId}-${serviceId}`, source: projId, target: serviceId });
     }
   }
 

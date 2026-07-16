@@ -18,6 +18,9 @@
   <a href="https://github.com/okturan/gcp-audit-dashboard/actions/workflows/ci.yml">
     <img alt="CI" src="https://github.com/okturan/gcp-audit-dashboard/actions/workflows/ci.yml/badge.svg" />
   </a>
+  <a href="https://okturan.github.io/gcp-audit-dashboard/">
+    <img alt="Synthetic demo" src="https://img.shields.io/badge/demo-synthetic%20data-238636?style=flat-square" />
+  </a>
 </p>
 
 <p align="center">
@@ -30,7 +33,9 @@
 
 ---
 
-GCP Audit Dashboard connects to your Google Cloud account using OAuth or the gcloud CLI, discovers every project, billing account, API key, service, IAM policy, and service account, then renders the whole picture as an interactive node graph with built-in security findings. Optionally, hand the data to Claude for deeper AI-powered analysis. Everything runs in the browser - there is no backend server.
+GCP Audit Dashboard connects to your Google Cloud account using OAuth or the gcloud CLI, discovers every project, billing account, API key, service, IAM policy, and service account, then renders the whole picture as an interactive node graph with built-in security findings. Optionally, hand the data to Claude for deeper AI-powered analysis. The production app has no hosted backend; its optional local-development middleware only obtains a short-lived token from your installed gcloud CLI.
+
+**[Open the public synthetic-data demo](https://okturan.github.io/gcp-audit-dashboard/)** to explore every dashboard view without a Google account, OAuth client, API key, or sensitive infrastructure export. The fixture is deliberately fictional and is covered by a credential-shape regression test.
 
 ## Features
 
@@ -44,6 +49,7 @@ GCP Audit Dashboard connects to your Google Cloud account using OAuth or the gcl
 - **Detail Drawer** - Click any resource to open a side panel with full metadata, IAM bindings, and service details
 - **Search and Filter** - Filter the graph by resource type or search across all nodes
 - **Dark Theme** - Purpose-built dark UI optimized for security operations
+- **Privacy-Safe Public Demo** - Loads a synthetic three-project GCP estate with representative billing, IAM, API-key, service-account, usage, and finding data
 
 ## Screenshots
 
@@ -69,7 +75,7 @@ GCP Audit Dashboard connects to your Google Cloud account using OAuth or the gcl
 
 ### Prerequisites
 
-- **Node.js 18+** and npm
+- **Node.js 20.19+ or 22.12+** and npm (the supported Vite 7 runtime range)
 - **Google Cloud account** with at least one project
 - **gcloud CLI** installed and authenticated (recommended), or a Google OAuth Client ID
 
@@ -93,6 +99,8 @@ npm run dev
 
 Open the URL printed by Vite (typically `http://localhost:5173`, but Vite will pick the next available port if 5173 is in use). If gcloud CLI credentials are detected, authentication happens automatically and discovery begins right away.
 
+For a zero-credential product tour, select **Explore the synthetic audit demo** on the sign-in screen. That path never contacts Google Cloud or Anthropic.
+
 ### Alternative: Google OAuth
 
 If you prefer OAuth instead of the gcloud CLI:
@@ -107,6 +115,16 @@ If you prefer OAuth instead of the gcloud CLI:
 npm run build
 npm run preview
 ```
+
+### Test and CI gate
+
+```bash
+npm test
+npm run lint
+npm run build
+```
+
+The deterministic suite validates the synthetic fixture, security-finding derivation, graph relationships, service-node coverage, and resource-ID deduplication. CI runs all three commands on every pull request; the default branch also deploys the synthetic-ready static build to GitHub Pages.
 
 ## How It Works
 
@@ -155,7 +173,7 @@ If you provide a Claude API key, the dashboard sends a compact JSON summary of y
 
 This project was designed with security as a first-class concern:
 
-- **Fully Client-Side** - There is no backend server. All API calls go directly from the browser to Google Cloud APIs and (optionally) the Anthropic API.
+- **No Hosted Data Backend** - In production, API calls go directly from the browser to Google Cloud APIs and (optionally) Anthropic. The local gcloud path uses Vite development middleware to obtain a short-lived CLI token on the same machine; it does not send audit data to a project-controlled server.
 - **No Token Persistence** - OAuth access tokens are held in JavaScript module-scoped variables, never written to localStorage or cookies. They are lost on page close. Only the OAuth Client ID (a public, non-secret value) and UI layout preferences are persisted to localStorage.
 - **No API Key Persistence** - The Claude API key is kept in component state only. It is never persisted to any storage.
 - **Read-Only Scopes** - The app only requests `read-only` and `readonly` OAuth scopes. It cannot modify your GCP resources.
@@ -241,10 +259,10 @@ Contributions are welcome! Here is how to get started:
 2. **Create a branch** for your feature or fix: `git checkout -b my-feature`
 3. **Install dependencies**: `npm install`
 4. **Start the dev server**: `npm run dev`
-5. **Make your changes** and verify the build passes: `npm run build`
-6. **Lint your code**: `npm run lint`
+5. **Make your changes** and run the deterministic suite: `npm test`
+6. **Verify lint and the production build**: `npm run lint && npm run build`
 7. **Commit** with a clear message describing the change
-8. **Open a pull request** against `main`
+8. **Open a pull request** against `master`
 
 ### Guidelines
 

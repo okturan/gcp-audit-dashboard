@@ -228,7 +228,13 @@ function OverviewDashboard() {
             Security Health
           </div>
           <div style={{ width: 110, height: 110, position: 'relative' }}>
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer
+              width="100%"
+              height="100%"
+              minWidth={0}
+              minHeight={0}
+              initialDimension={{ width: 110, height: 110 }}
+            >
               <PieChart>
                 <Pie
                   data={pieData}
@@ -421,7 +427,13 @@ function MiniBarChart({ title, data, color, labelColor, onBarClick }: {
       }}>
         {title}
       </div>
-      <ResponsiveContainer width="100%" height={chartHeight}>
+      <ResponsiveContainer
+        width="100%"
+        height={chartHeight}
+        minWidth={0}
+        minHeight={0}
+        initialDimension={{ width: 640, height: chartHeight }}
+      >
         <BarChart data={data} layout="vertical" margin={{ top: 0, right: 48, bottom: 0, left: 0 }}>
           <XAxis type="number" hide domain={[0, (d: number) => Math.ceil(d * 1.15)]} />
           <YAxis

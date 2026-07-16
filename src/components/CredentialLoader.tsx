@@ -20,7 +20,7 @@ const STEPS = [
         >
           APIs & Services → Credentials
         </a>{' '}
-        in any project (e.g. <code style={{ color: '#58a6ff' }}>service-account-hub</code>).<br />
+        in any project (e.g. <code style={{ color: '#58a6ff' }}>example-credentials-project</code>).<br />
         <strong style={{ color: '#c9d1d9' }}>+ Create Credentials → OAuth client ID → Web application</strong><br />
         Name it <code style={{ color: '#58a6ff' }}>gcloud-dashboard</code>.
       </>
@@ -74,7 +74,7 @@ const STEPS = [
 ];
 
 export function CredentialLoader() {
-  const { oauthClientId, setOAuthClientId, signIn, signInWithGcloud, signInError, claudeApiKey, setClaudeApiKey, gcloudAccounts } =
+  const { oauthClientId, setOAuthClientId, signIn, signInWithGcloud, loadSyntheticDemo, signInError, claudeApiKey, setClaudeApiKey, gcloudAccounts } =
     useGCPStore();
   const [guideOpen, setGuideOpen] = useState(false);
   const [gisReady, setGisReady] = useState(isGISReady());
@@ -120,6 +120,28 @@ export function CredentialLoader() {
         <p style={{ color: '#8b949e', fontSize: 14, marginTop: 6 }}>
           Sign in with Google to visualise your entire GCP footprint
         </p>
+      </div>
+
+      <button
+        onClick={loadSyntheticDemo}
+        className="btn-primary"
+        style={{
+          width: '100%',
+          maxWidth: 480,
+          background: '#238636',
+          border: '1px solid #2ea043',
+          borderRadius: 8,
+          padding: '12px 24px',
+          color: '#ffffff',
+          fontSize: 14,
+          fontWeight: 700,
+          cursor: 'pointer',
+        }}
+      >
+        Explore the synthetic audit demo
+      </button>
+      <div style={{ maxWidth: 480, color: '#7d8590', fontSize: 11, textAlign: 'center', marginTop: -12 }}>
+        No sign-in or API key required. Every project, account, and finding is fictional.
       </div>
 
       {/* gcloud CLI accounts */}

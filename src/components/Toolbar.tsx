@@ -183,6 +183,7 @@ export function Toolbar() {
   const isDiscovering = discoveryState === 'loading';
   const isAnalyzing = insightState === 'loading';
   const hasData = rawProjects.length > 0;
+  const isSample = authMethod === 'sample';
 
   // Relative timestamp label, refreshed every 30 s
   const [tick, setTick] = useState(0);
@@ -247,9 +248,11 @@ export function Toolbar() {
           <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/>
         </svg>
         <span>
-          {authMethod === 'gcloud'
-            ? `${gcloudEmail || 'gcloud CLI'}${gcloudEmail ? ' (via gcloud CLI)' : ''}`
-            : gcloudEmail || 'Signed in with Google'}
+          {isSample
+            ? 'Synthetic demo data'
+            : authMethod === 'gcloud'
+              ? `${gcloudEmail || 'gcloud CLI'}${gcloudEmail ? ' (via gcloud CLI)' : ''}`
+              : gcloudEmail || 'Signed in with Google'}
         </span>
         <button
           onClick={signOut}
@@ -270,48 +273,52 @@ export function Toolbar() {
       </div>
 
       {/* Claude key */}
-      <input
-        type="password"
-        className="input-field"
-        placeholder="Claude API key (optional)"
-        value={claudeApiKey}
-        onChange={(e) => setClaudeApiKey(e.target.value)}
-        style={{
-          background: '#0d1117',
-          border: '1px solid #30363d',
-          borderRadius: 6,
-          padding: '5px 10px',
-          color: '#e6edf3',
-          fontSize: 12,
-          width: 200,
-          fontFamily: 'monospace',
-          outline: 'none',
-        }}
-      />
+      {!isSample && (
+        <input
+          type="password"
+          className="input-field"
+          placeholder="Claude API key (optional)"
+          value={claudeApiKey}
+          onChange={(e) => setClaudeApiKey(e.target.value)}
+          style={{
+            background: '#0d1117',
+            border: '1px solid #30363d',
+            borderRadius: 6,
+            padding: '5px 10px',
+            color: '#e6edf3',
+            fontSize: 12,
+            width: 200,
+            fontFamily: 'monospace',
+            outline: 'none',
+          }}
+        />
+      )}
 
       {/* Discover */}
-      <button
-        onClick={discover}
-        disabled={isDiscovering}
-        className="btn-primary"
-        style={{
-          background: isDiscovering ? '#1d4778' : '#1f6feb',
-          border: 'none',
-          borderRadius: 6,
-          padding: '6px 16px',
-          color: '#ffffff',
-          fontSize: 13,
-          fontWeight: 600,
-          cursor: isDiscovering ? 'not-allowed' : 'pointer',
-          opacity: isDiscovering ? 0.7 : 1,
-          transition: 'filter 0.15s, box-shadow 0.15s',
-        }}
-      >
-        {isDiscovering ? '⏳ Discovering…' : '▶ Discover'}
-      </button>
+      {!isSample && (
+        <button
+          onClick={discover}
+          disabled={isDiscovering}
+          className="btn-primary"
+          style={{
+            background: isDiscovering ? '#1d4778' : '#1f6feb',
+            border: 'none',
+            borderRadius: 6,
+            padding: '6px 16px',
+            color: '#ffffff',
+            fontSize: 13,
+            fontWeight: 600,
+            cursor: isDiscovering ? 'not-allowed' : 'pointer',
+            opacity: isDiscovering ? 0.7 : 1,
+            transition: 'filter 0.15s, box-shadow 0.15s',
+          }}
+        >
+          {isDiscovering ? '⏳ Discovering…' : '▶ Discover'}
+        </button>
+      )}
 
       {/* Analyze */}
-      {claudeApiKey && (
+      {!isSample && claudeApiKey && (
         <button
           onClick={analyze}
           disabled={isAnalyzing || !hasData}

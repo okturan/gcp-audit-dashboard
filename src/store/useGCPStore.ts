@@ -4,6 +4,7 @@ import { discoverAll } from '../discovery';
 import { buildGraph } from '../graph/builder';
 import { analyzeWithClaude } from '../claude/enricher';
 import { requestToken, clearToken, getToken, setToken } from '../auth/GoogleOAuth';
+import { syntheticBillingAccounts, syntheticProjects } from '../data/syntheticAudit';
 
 // ── Toast notifications ──────────────────────────────────────────────────────
 let _toastId = 0;
@@ -33,7 +34,7 @@ export function subscribeToasts(fn: (toasts: Toast[]) => void) {
 type DiscoveryState = 'idle' | 'loading' | 'success' | 'error';
 type InsightState = 'idle' | 'loading' | 'success' | 'error';
 export type AuthState = 'checking' | 'signed-out' | 'signed-in';
-export type AuthMethod = 'gcloud' | 'oauth' | null;
+export type AuthMethod = 'gcloud' | 'oauth' | 'sample' | null;
 export type ViewId = 'overview' | 'graph' | 'table' | 'charts' | 'findings';
 
 // Module-level flag — prevents autoAuth from re-firing after manual sign-out.
@@ -90,6 +91,7 @@ interface GCPStore {
   autoAuth: () => Promise<void>;
   signIn: () => void;
   signInWithGcloud: (email: string) => Promise<void>;
+  loadSyntheticDemo: () => void;
   signOut: () => void;
   bumpFitView: () => void;
   setClaudeApiKey: (key: string) => void;
@@ -220,6 +222,30 @@ export const useGCPStore = create<GCPStore>((set, get) => ({
       () => set({ authState: 'signed-in', authMethod: 'oauth', signInError: null, gcloudEmail: '' }),
       (err) => set({ signInError: err, authState: 'signed-out' }),
     );
+  },
+
+  loadSyntheticDemo: () => {
+    const { nodes, edges } = buildGraph(syntheticBillingAccounts, syntheticProjects, {});
+    set((state) => ({
+      authState: 'signed-in',
+      authMethod: 'sample',
+      gcloudEmail: '',
+      signInError: null,
+      discoveryState: 'success',
+      discoveryError: null,
+      discoveryProgress: '',
+      discoveryWarnings: 0,
+      rawBillingAccounts: syntheticBillingAccounts,
+      rawProjects: syntheticProjects,
+      nodes,
+      edges,
+      insights: {},
+      insightState: 'idle',
+      activeView: 'overview',
+      fitViewTrigger: state.fitViewTrigger + 1,
+      lastDiscoveredAt: new Date(),
+    }));
+    addToast('Loaded privacy-safe synthetic audit');
   },
 
   signOut: () => {
