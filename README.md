@@ -75,7 +75,7 @@ GCP Audit Dashboard connects to your Google Cloud account using OAuth or the gcl
 
 ### Prerequisites
 
-- **Node.js 18+** and npm
+- **Node.js 20.19+ or 22.12+** and npm (the supported Vite 7 runtime range)
 - **Google Cloud account** with at least one project
 - **gcloud CLI** installed and authenticated (recommended), or a Google OAuth Client ID
 
@@ -262,7 +262,7 @@ Contributions are welcome! Here is how to get started:
 5. **Make your changes** and run the deterministic suite: `npm test`
 6. **Verify lint and the production build**: `npm run lint && npm run build`
 7. **Commit** with a clear message describing the change
-8. **Open a pull request** against `main`
+8. **Open a pull request** against `master`
 
 ### Guidelines
 

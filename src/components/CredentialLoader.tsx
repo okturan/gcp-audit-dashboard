@@ -20,7 +20,7 @@ const STEPS = [
         >
           APIs & Services → Credentials
         </a>{' '}
-        in any project (e.g. <code style={{ color: '#58a6ff' }}>service-account-hub</code>).<br />
+        in any project (e.g. <code style={{ color: '#58a6ff' }}>example-credentials-project</code>).<br />
         <strong style={{ color: '#c9d1d9' }}>+ Create Credentials → OAuth client ID → Web application</strong><br />
         Name it <code style={{ color: '#58a6ff' }}>gcloud-dashboard</code>.
       </>
