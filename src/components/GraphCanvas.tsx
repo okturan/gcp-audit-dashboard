@@ -442,6 +442,7 @@ const NODE_TYPE_COLORS: [string, string, string][] = [
   ['billingAccount', '#d97706', 'Billing'],
   ['project', '#1f6feb', 'Project'],
   ['apiKey', '#3fb950', 'API Key'],
+  ['service', '#8b949e', 'Service'],
 ];
 
 function NodeTypeLegend() {

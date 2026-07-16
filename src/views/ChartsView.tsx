@@ -39,7 +39,13 @@ function HBar({
   const barHeight = 24;
   const chartHeight = data.length * barHeight + 24;
   return (
-    <ResponsiveContainer width="100%" height={chartHeight}>
+    <ResponsiveContainer
+      width="100%"
+      height={chartHeight}
+      minWidth={0}
+      minHeight={0}
+      initialDimension={{ width: 640, height: chartHeight }}
+    >
       <BarChart data={data} layout="vertical" margin={{ top: 0, right: 48, bottom: 0, left: 0 }}>
         <XAxis
           type="number"

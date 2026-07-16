@@ -1,11 +1,12 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { exec } from 'child_process'
+import { execFile } from 'child_process'
 import { promisify } from 'util'
 
-const execAsync = promisify(exec)
+const execFileAsync = promisify(execFile)
 
 export default defineConfig({
+  base: process.env.GITHUB_ACTIONS ? '/gcp-audit-dashboard/' : '/',
   plugins: [
     react(),
     {
@@ -14,8 +15,9 @@ export default defineConfig({
         // List all authenticated gcloud accounts
         server.middlewares.use('/api/gcloud-accounts', async (_req, res) => {
           try {
-            const { stdout } = await execAsync(
-              "gcloud auth list --format='json(account,status)'"
+            const { stdout } = await execFileAsync(
+              'gcloud',
+              ['auth', 'list', '--format=json(account,status)']
             )
             const accounts = JSON.parse(stdout) as { account: string; status: string }[]
             res.setHeader('Content-Type', 'application/json')
@@ -32,12 +34,14 @@ export default defineConfig({
           try {
             const url = new URL(req.url ?? '/', 'http://localhost')
             const account = url.searchParams.get('account')
-            const accountFlag = account ? ` --account=${account}` : ''
             const [{ stdout: token }, { stdout: email }] = await Promise.all([
-              execAsync(`gcloud auth print-access-token${accountFlag}`),
+              execFileAsync(
+                'gcloud',
+                ['auth', 'print-access-token', ...(account ? ['--account', account] : [])]
+              ),
               account
                 ? Promise.resolve({ stdout: account })
-                : execAsync('gcloud config get-value account'),
+                : execFileAsync('gcloud', ['config', 'get-value', 'account']),
             ])
             res.setHeader('Content-Type', 'application/json')
             res.end(JSON.stringify({ token: token.trim(), email: typeof email === 'string' ? email.trim() : email }))
