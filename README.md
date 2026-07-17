@@ -66,6 +66,18 @@ GCP Audit Dashboard connects to your Google Cloud account using OAuth or the gcl
 </p>
 
 <p align="center">
+  <img src="docs/screenshots/table.png" alt="Sortable project and API-key inventory from the synthetic audit" width="800" />
+  <br/>
+  <em>Sortable project and API-key inventory with billing, usage, restriction, age, and ownership context</em>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/charts.png" alt="Usage charts for the synthetic Google Cloud estate" width="800" />
+  <br/>
+  <em>Usage and inventory charts that compare request volume, enabled services, keys, service accounts, and IAM members by project</em>
+</p>
+
+<p align="center">
   <img src="docs/screenshots/findings.png" alt="Findings View" width="800" />
   <br/>
   <em>Security findings view with severity filtering and one-click navigation to affected resources</em>
